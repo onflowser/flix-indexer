@@ -55,6 +55,10 @@ func NewFromJson(rawJson []byte) (Template, error) {
 	}, nil
 }
 
+func (t Template) ID() string {
+	return t.parsed.Id
+}
+
 func (t Template) MarshalJSON() ([]byte, error) {
 	return t.raw, nil
 }

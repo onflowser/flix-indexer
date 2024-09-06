@@ -70,7 +70,16 @@ func (i *TemplateIndexer) List() []Template {
 	return i.store
 }
 
-func (i *TemplateIndexer) LookupBySource(cadenceSource []byte) (*Template, error) {
+func (i *TemplateIndexer) GetByID(id string) *Template {
+	for _, template := range i.store {
+		if template.ID() == id {
+			return &template
+		}
+	}
+	return nil
+}
+
+func (i *TemplateIndexer) GetBySource(cadenceSource []byte) (*Template, error) {
 	for _, template := range i.store {
 		isMatch, err := template.MatchesSource(cadenceSource)
 		if err != nil {

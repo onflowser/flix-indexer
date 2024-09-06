@@ -34,7 +34,7 @@ func (s *HttpServer) Setup() {
 				w.WriteHeader(http.StatusBadRequest)
 			}
 
-			match, err := s.Indexer.LookupBySource(cadenceSource)
+			match, err := s.Indexer.GetBySource(cadenceSource)
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 			}
@@ -45,6 +45,26 @@ func (s *HttpServer) Setup() {
 
 		} else {
 			response.Data = s.Indexer.List()
+		}
+
+		jsonResponse, err := json.Marshal(response)
+		if err != nil {
+			s.Logger.Printf("error serializing response: %e", err)
+		}
+
+		_, err = w.Write(jsonResponse)
+		if err != nil {
+			s.Logger.Printf("error writing response: %e", err)
+		}
+	})
+
+	http.HandleFunc("/v1.1/templates/{id}", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Content-Type", "application/json")
+
+		response := s.Indexer.GetByID(r.PathValue("id"))
+		if response == nil {
+			w.WriteHeader(http.StatusNotFound)
+			return
 		}
 
 		jsonResponse, err := json.Marshal(response)
