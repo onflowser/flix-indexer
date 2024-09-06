@@ -12,7 +12,6 @@ import (
 	"github.com/go-git/go-git/v5"
 )
 
-// Repository defines the Git URL and interaction paths for each repository
 type Repository struct {
 	GitUrl           string
 	InteractionPaths []string
@@ -20,7 +19,6 @@ type Repository struct {
 
 var cleanupTempFolders = false
 
-// Define the repositories array
 var repos = []Repository{
 	{
 		GitUrl: "https://github.com/onflow/flow-nft",
@@ -55,7 +53,6 @@ var repos = []Repository{
 	},
 }
 
-// processCadenceFile handles processing of a Cadence file
 func processCadenceFile(projectPath, cdcFilePath string) {
 	projectName := filepath.Base(projectPath)
 	flixFileName := strings.Replace(filepath.Base(cdcFilePath), ".cdc", ".template.json", 1)
@@ -84,20 +81,18 @@ func processCadenceFile(projectPath, cdcFilePath string) {
 
 // flixGenerate generates a Flix template from the given Cadence file
 func flixGenerate(projectPath, sourceFilePath string) (string, error) {
-	outFilePath := sourceFilePath + ".flix.json"
-	// This Flow CLI binary was manually built from source
-	// and includes this change: https://github.com/onflow/flixkit-go/pull/78
 	cwd, err := os.Getwd()
 	if err != nil {
 		return "", err
 	}
 	cmd := exec.Command(
+		// This Flow CLI binary was manually built from source
+		// and includes this change: https://github.com/onflow/flixkit-go/pull/78
 		path.Join(cwd, "./flow-cli-next"),
 		"flix",
 		"generate",
 		path.Join(cwd, sourceFilePath),
-		"--save",
-		outFilePath,
+		"--exclude-networks=testing,previewnet",
 	)
 	cmd.Dir = projectPath
 
@@ -106,15 +101,9 @@ func flixGenerate(projectPath, sourceFilePath string) (string, error) {
 		return "", fmt.Errorf("failed to run flow-cli: %v, output: %s", err, output)
 	}
 
-	content, err := os.ReadFile(outFilePath)
-	if err != nil {
-		return "", fmt.Errorf("failed to read generated file: %v", err)
-	}
-
-	return string(content), nil
+	return string(output), nil
 }
 
-// processRepositories handles the cloning and processing of repositories
 func processRepositories(repos []Repository) {
 	for _, repo := range repos {
 		repoName := filepath.Base(repo.GitUrl)
@@ -147,7 +136,6 @@ func processRepositories(repos []Repository) {
 	}
 }
 
-// cloneRepository clones a Git repository into the specified directory
 func cloneRepository(gitUrl, targetDir string) error {
 	_, err := git.PlainClone(targetDir, false, &git.CloneOptions{
 		URL:      gitUrl,
@@ -156,7 +144,6 @@ func cloneRepository(gitUrl, targetDir string) error {
 	return err
 }
 
-// findFiles searches for files matching the pattern in the specified directory
 func findFiles(basePath, pattern string) ([]string, error) {
 	files, err := filepath.Glob(filepath.Join(basePath, pattern))
 	if err != nil {
@@ -165,7 +152,6 @@ func findFiles(basePath, pattern string) ([]string, error) {
 	return files, nil
 }
 
-// cleanupDirectory removes the specified directory
 func cleanupDirectory(directory string) {
 	err := os.RemoveAll(directory)
 	if err != nil {
