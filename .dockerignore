@@ -1,0 +1,97 @@
+# flyctl launch added from .gitignore
+**/temp
+**/flow-cli-next
+
+# flyctl launch added from .idea/.gitignore
+# Default ignored files
+.idea/shelf
+.idea/workspace.xml
+# Editor-based HTTP Client requests
+.idea/httpRequests
+# Datasource local storage ignored files
+.idea/dataSources
+.idea/dataSources.local.xml
+
+# flyctl launch added from temp/float/.gitignore
+temp/float/**/.DS_Store
+temp/float/**/node_modules
+temp/float/build
+temp/float/.svelte-kit
+temp/float/package
+temp/float/**/.env
+temp/float/**/.env.production
+temp/float/**/.env.development
+temp/float/**/.vercel
+temp/float/**/.output
+temp/float/**/.env.development
+temp/float/**/.env.production
+temp/float/**/.vercel_build_output
+temp/float/**/testnet-account.pkey
+temp/float/**/mainnet-account.pkey
+temp/float/**/testnet-account-float-verifiers.pkey
+
+# flyctl launch added from temp/float/supabase/.gitignore
+# Supabase
+temp/float/supabase/**/.branches
+temp/float/supabase/**/.temp
+
+# flyctl launch added from temp/flow-core-contracts/.gitignore
+# Test binary, build with `go test -c`
+temp/flow-core-contracts/**/*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+temp/flow-core-contracts/**/*.out
+
+temp/flow-core-contracts/**/.DS_Store
+
+temp/flow-core-contracts/**/node_modules
+
+# IDE related files
+temp/flow-core-contracts/**/.idea
+temp/flow-core-contracts/**/.vscode
+temp/flow-core-contracts/**/git
+
+temp/flow-core-contracts/**/coverage.json
+temp/flow-core-contracts/**/coverage.lcov
+temp/flow-core-contracts/**/flow.json
+
+# flyctl launch added from temp/flow-evm-bridge/.gitignore
+# Compiler files
+temp/flow-evm-bridge/**/cache
+temp/flow-evm-bridge/**/out
+
+# Ignores development broadcast logs
+!temp/flow-evm-bridge/broadcast
+temp/flow-evm-bridge/broadcast/*/31337
+temp/flow-evm-bridge/broadcast/**/dry-run
+
+# Docs
+temp/flow-evm-bridge/**/docs
+
+# Dotenv file
+temp/flow-evm-bridge/**/.env
+
+# flow-evm-gateway db/ files
+temp/flow-evm-bridge/**/db
+
+# Cadence test framework coverage
+temp/flow-evm-bridge/**/coverage.json
+temp/flow-evm-bridge/**/coverage.lcov
+
+# Keys
+temp/flow-evm-bridge/**/*.pkey
+temp/flow-evm-bridge/**/*.pem
+
+# Local configs
+temp/flow-evm-bridge/**/local.flow.json
+
+# Local
+temp/flow-evm-bridge/**/.DS_Store
+temp/flow-evm-bridge/**/.vscode
+
+# flyctl launch added from temp/flow-nft/.gitignore
+temp/flow-nft/**/.idea
+temp/flow-nft/**/.vscode
+temp/flow-nft/**/node_modules
+temp/flow-nft/**/coverage.json
+fly.toml
