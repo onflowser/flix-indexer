@@ -1,0 +1,38 @@
+
+{
+    "f_type": "InteractionTemplate",
+    "f_version": "1.1.0",
+    "id": "69baf7e020bbf75c77fc513dea96ebd63aa47e295a79944bdd65e629e89f3ea8",
+    "data": {
+        "type": "transaction",
+        "interface": "",
+        "messages": null,
+        "cadence": {
+            "body": "transaction(keyIndex: Int) {\n\tprepare(signer: auth(RevokeKey) \u0026Account) {\n\t\tif let key = signer.keys.get(keyIndex: keyIndex) {\n\t\t\tsigner.keys.revoke(keyIndex: keyIndex)\n\t\t} else {\n\t\t\tpanic(\"No key with the given index exists on the authorizer's account\")\n\t\t}\n\t}\n}",
+            "network_pins": [
+                {
+                    "network": "emulator",
+                    "pin_self": "92fe88bb069f81d7ffa6f583e656af83deb0d7f5211ea12391053990ac61e4bd"
+                },
+                {
+                    "network": "mainnet",
+                    "pin_self": "92fe88bb069f81d7ffa6f583e656af83deb0d7f5211ea12391053990ac61e4bd"
+                },
+                {
+                    "network": "testnet",
+                    "pin_self": "92fe88bb069f81d7ffa6f583e656af83deb0d7f5211ea12391053990ac61e4bd"
+                }
+            ]
+        },
+        "dependencies": null,
+        "parameters": [
+            {
+                "label": "keyIndex",
+                "index": 0,
+                "type": "Int",
+                "messages": []
+            }
+        ]
+    }
+}
+

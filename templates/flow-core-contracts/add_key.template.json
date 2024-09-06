@@ -1,0 +1,56 @@
+
+{
+    "f_type": "InteractionTemplate",
+    "f_version": "1.1.0",
+    "id": "f7c9f7711daf2f851ce60ab62a93bebce70c2e6e0be71454c5259377c055a281",
+    "data": {
+        "type": "transaction",
+        "interface": "",
+        "messages": null,
+        "cadence": {
+            "body": "import Crypto\n\ntransaction(key: String, signatureAlgorithm: UInt8, hashAlgorithm: UInt8, weight: UFix64) {\n\n\tprepare(signer: auth(AddKey) \u0026Account) {\n\t\tpre {\n\t\t\tsignatureAlgorithm \u003e= 1 \u0026\u0026 signatureAlgorithm \u003c= 3: \"Must provide a signature algorithm raw value that is 1, 2, or 3\"\n\t\t\thashAlgorithm \u003e= 1 \u0026\u0026 hashAlgorithm \u003c= 6: \"Must provide a hash algorithm raw value that is between 1 and 6\"\n\t\t\tweight \u003c= 1000.0: \"The key weight must be between 0 and 1000\"\n\t\t}\n\t\tlet publicKey = PublicKey(\n\t\t\tpublicKey: key.decodeHex(),\n\t\t\tsignatureAlgorithm: SignatureAlgorithm(rawValue: signatureAlgorithm)!\n\t\t)\n\n\t\tsigner.keys.add(publicKey: publicKey, hashAlgorithm: HashAlgorithm(rawValue: hashAlgorithm)!, weight: weight)\n\t}\n}",
+            "network_pins": [
+                {
+                    "network": "testnet",
+                    "pin_self": "68ed10c87c001ec922669481b528724abaa2b6bc73fbdec250d5b4f02844bda1"
+                },
+                {
+                    "network": "emulator",
+                    "pin_self": "68ed10c87c001ec922669481b528724abaa2b6bc73fbdec250d5b4f02844bda1"
+                },
+                {
+                    "network": "mainnet",
+                    "pin_self": "68ed10c87c001ec922669481b528724abaa2b6bc73fbdec250d5b4f02844bda1"
+                }
+            ]
+        },
+        "dependencies": [],
+        "parameters": [
+            {
+                "label": "key",
+                "index": 0,
+                "type": "String",
+                "messages": []
+            },
+            {
+                "label": "signatureAlgorithm",
+                "index": 1,
+                "type": "UInt8",
+                "messages": []
+            },
+            {
+                "label": "hashAlgorithm",
+                "index": 2,
+                "type": "UInt8",
+                "messages": []
+            },
+            {
+                "label": "weight",
+                "index": 3,
+                "type": "UFix64",
+                "messages": []
+            }
+        ]
+    }
+}
+

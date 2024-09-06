@@ -1,0 +1,334 @@
+
+{
+    "f_type": "InteractionTemplate",
+    "f_version": "1.1.0",
+    "id": "2fa620e178ca776e6850622f5e33aeed36f37f7d66a53bfd760f34b4bafd46a8",
+    "data": {
+        "type": "transaction",
+        "interface": "",
+        "messages": null,
+        "cadence": {
+            "body": "import \"FLOAT\"\n\ntransaction(eventId: UInt64) {\n\n  let FLOATEvents: auth(FLOAT.EventsOwner) \u0026FLOAT.FLOATEvents\n\n  prepare(account: auth(Storage) \u0026Account) {\n    self.FLOATEvents = account.storage.borrow\u003cauth(FLOAT.EventsOwner) \u0026FLOAT.FLOATEvents\u003e(from: FLOAT.FLOATEventsStoragePath)\n                        ?? panic(\"Could not borrow the FLOATEvents from the signer.\")\n  }\n\n  execute {\n    let floatEvent = self.FLOATEvents.borrowEventRef(eventId: eventId) ?? panic(\"This event does not exist.\")\n    floatEvent.toggleClaimable()\n  }\n}",
+            "network_pins": [
+                {
+                    "network": "emulator",
+                    "pin_self": "c465d6cfcab94e5e6df9b695622478c9ae1286f20218766fd49bb653e2cd5435"
+                },
+                {
+                    "network": "mainnet",
+                    "pin_self": "c051126a54fb7b0e298152bfd440bb69659b7beb3bc9acfb28df628c96700b7a"
+                },
+                {
+                    "network": "testnet",
+                    "pin_self": "e1ee2ccffdf9a71bb6d76f9d8911bc3880781ff22fbbf86efa35d48b9fe0d021"
+                }
+            ]
+        },
+        "dependencies": [
+            {
+                "contracts": [
+                    {
+                        "contract": "FLOAT",
+                        "networks": [
+                            {
+                                "network": "testnet",
+                                "address": "857dc34d5e1631d3",
+                                "dependency_pin_block_height": 215084301,
+                                "dependency_pin": {
+                                    "pin": "cd2412ecf641b20532348c909f047dfb75d328c3082c5941a16283a713455054",
+                                    "pin_self": "a33b633719aee408fe830b8c071e9c16b87af7d5ad29c672be07570e57b1e1ec",
+                                    "pin_contract_name": "FLOAT",
+                                    "pin_contract_address": "0x857dc34d5e1631d3",
+                                    "imports": [
+                                        {
+                                            "pin": "b12511cf8bc6237d06580340c0118c624dc4f4f0faee8d073417c9b1e09ae65f",
+                                            "pin_self": "8396ebca01cd8d9ada9cd04f8a50dd85c2725fbb893d5a6a35ac9598237b725f",
+                                            "pin_contract_name": "NonFungibleToken",
+                                            "pin_contract_address": "0x631e88ae7f1d7c20",
+                                            "imports": [
+                                                {
+                                                    "pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+                                                    "pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+                                                    "pin_contract_name": "ViewResolver",
+                                                    "pin_contract_address": "0x631e88ae7f1d7c20",
+                                                    "imports": []
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "pin": "613c4780a9f9eb978db7c077838fee4deec459cef415c16dc7944f7ef6c9dfbd",
+                                            "pin_self": "60cb90ca0c0135f6f9ac74d87c4cb55350da74ed985f804b514754ffe1c04b48",
+                                            "pin_contract_name": "MetadataViews",
+                                            "pin_contract_address": "0x631e88ae7f1d7c20",
+                                            "imports": [
+                                                {
+                                                    "pin": "1dcfe88a8f608a664b492e23dfdfdcc0f8d13f5261c918801f196f111584a9ef",
+                                                    "pin_self": "1e23db980500f7f0b3112dbec14ee03079525c3e490532981e333607a0d72648",
+                                                    "pin_contract_name": "FungibleToken",
+                                                    "pin_contract_address": "0x9a0766d93b6608b7",
+                                                    "imports": [
+                                                        {
+                                                            "pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+                                                            "pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+                                                            "pin_contract_name": "ViewResolver",
+                                                            "pin_contract_address": "0x631e88ae7f1d7c20",
+                                                            "imports": []
+                                                        },
+                                                        {
+                                                            "pin": "fdf38f744b1cccbff5682a29a51efe62d3a596c40784491629cd2a037eed2ba8",
+                                                            "pin_self": "b230a59e4f9f68ce0c06977a1cb38e7f560a843054602143f81c533cebf72aa7",
+                                                            "pin_contract_name": "Burner",
+                                                            "pin_contract_address": "0x9a0766d93b6608b7",
+                                                            "imports": []
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+                                                    "pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+                                                    "pin_contract_name": "ViewResolver",
+                                                    "pin_contract_address": "0x631e88ae7f1d7c20",
+                                                    "imports": []
+                                                },
+                                                {
+                                                    "pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+                                                    "pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+                                                    "pin_contract_name": "ViewResolver",
+                                                    "pin_contract_address": "0x631e88ae7f1d7c20",
+                                                    "imports": []
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "pin": "fdf38f744b1cccbff5682a29a51efe62d3a596c40784491629cd2a037eed2ba8",
+                                            "pin_self": "b230a59e4f9f68ce0c06977a1cb38e7f560a843054602143f81c533cebf72aa7",
+                                            "pin_contract_name": "Burner",
+                                            "pin_contract_address": "0x9a0766d93b6608b7",
+                                            "imports": []
+                                        },
+                                        {
+                                            "pin": "e2b9763489789d6c7f7372f353c87ef6a0779a2739efdd375dc3e71348040149",
+                                            "pin_self": "2a54d9460bc7fc58eb0b7c11563882d5835ddf614a127746d8d2278fc74adcdf",
+                                            "pin_contract_name": "FlowToken",
+                                            "pin_contract_address": "0x7e60df042a9c0868",
+                                            "imports": [
+                                                {
+                                                    "pin": "fdf38f744b1cccbff5682a29a51efe62d3a596c40784491629cd2a037eed2ba8",
+                                                    "pin_self": "b230a59e4f9f68ce0c06977a1cb38e7f560a843054602143f81c533cebf72aa7",
+                                                    "pin_contract_name": "Burner",
+                                                    "pin_contract_address": "0x9a0766d93b6608b7",
+                                                    "imports": []
+                                                },
+                                                {
+                                                    "pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+                                                    "pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+                                                    "pin_contract_name": "ViewResolver",
+                                                    "pin_contract_address": "0x631e88ae7f1d7c20",
+                                                    "imports": []
+                                                },
+                                                {
+                                                    "pin": "35eb92cb2e0e83ad91d6238f8bce57f7de3cefdf7c35faf343f3df879a88ba12",
+                                                    "pin_self": "be600421a8b9799c427e7e69fcb5c94fba7f4f00277840f30c5cbb4b08f1f890",
+                                                    "pin_contract_name": "FungibleTokenMetadataViews",
+                                                    "pin_contract_address": "0x9a0766d93b6608b7",
+                                                    "imports": [
+                                                        {
+                                                            "pin": "fdf38f744b1cccbff5682a29a51efe62d3a596c40784491629cd2a037eed2ba8",
+                                                            "pin_self": "b230a59e4f9f68ce0c06977a1cb38e7f560a843054602143f81c533cebf72aa7",
+                                                            "pin_contract_name": "Burner",
+                                                            "pin_contract_address": "0x9a0766d93b6608b7",
+                                                            "imports": []
+                                                        },
+                                                        {
+                                                            "pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+                                                            "pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+                                                            "pin_contract_name": "ViewResolver",
+                                                            "pin_contract_address": "0x631e88ae7f1d7c20",
+                                                            "imports": []
+                                                        },
+                                                        {
+                                                            "pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+                                                            "pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+                                                            "pin_contract_name": "ViewResolver",
+                                                            "pin_contract_address": "0x631e88ae7f1d7c20",
+                                                            "imports": []
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+                                            "pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+                                            "pin_contract_name": "ViewResolver",
+                                            "pin_contract_address": "0x631e88ae7f1d7c20",
+                                            "imports": []
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "network": "emulator",
+                                "address": "f8d6e0586b0a20c7",
+                                "dependency_pin_block_height": 0,
+                                "dependency_pin": {
+                                    "pin": "42012470e20e90036b3098da71e1056ce0e561031bc41fa47faa1d1269f93a2e",
+                                    "pin_self": "a7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f8434a",
+                                    "pin_contract_name": "FLOAT",
+                                    "pin_contract_address": "0xf8d6e0586b0a20c7",
+                                    "imports": []
+                                }
+                            },
+                            {
+                                "network": "mainnet",
+                                "address": "2d4c3caffbeab845",
+                                "dependency_pin_block_height": 86159102,
+                                "dependency_pin": {
+                                    "pin": "c5d29ba173113d62e6606a92d60f6c7c50c51fa9b53aab4577ce5509631d01a7",
+                                    "pin_self": "9a1964c720a962330ce8a548802b9825e48c8fadc4a41f7139805f1029071942",
+                                    "pin_contract_name": "FLOAT",
+                                    "pin_contract_address": "0x2d4c3caffbeab845",
+                                    "imports": [
+                                        {
+                                            "pin": "ab297380ce176ffbd8976e7805ebf180dcd8a65933c5607680941d565ff2ecf1",
+                                            "pin_self": "e087a979d2220b9ff33a82751416bb9d2f9051a1aa2cc7383c00f37073c44006",
+                                            "pin_contract_name": "NonFungibleToken",
+                                            "pin_contract_address": "0x1d7e57aa55817448",
+                                            "imports": [
+                                                {
+                                                    "pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+                                                    "pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+                                                    "pin_contract_name": "ViewResolver",
+                                                    "pin_contract_address": "0x1d7e57aa55817448",
+                                                    "imports": []
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "pin": "28a2db3e78aae10b5f2990f200f57c3237307909052da683c1b9d6196db873ef",
+                                            "pin_self": "856ef3bb1b374cda7cfc0731f9976fa69fccdc41e15b8d94cbdb72bc09628272",
+                                            "pin_contract_name": "MetadataViews",
+                                            "pin_contract_address": "0x1d7e57aa55817448",
+                                            "imports": [
+                                                {
+                                                    "pin": "2ebe6fb33e21006b9bc37275534d199a3768639c0cd531a233d81576dfcb2602",
+                                                    "pin_self": "b913af1e763599b37d54e6e439dd4b435b61c9c1d9fee3628427099f05d4d3f0",
+                                                    "pin_contract_name": "FungibleToken",
+                                                    "pin_contract_address": "0xf233dcee88fe0abe",
+                                                    "imports": [
+                                                        {
+                                                            "pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+                                                            "pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+                                                            "pin_contract_name": "ViewResolver",
+                                                            "pin_contract_address": "0x1d7e57aa55817448",
+                                                            "imports": []
+                                                        },
+                                                        {
+                                                            "pin": "fdf38f744b1cccbff5682a29a51efe62d3a596c40784491629cd2a037eed2ba8",
+                                                            "pin_self": "b230a59e4f9f68ce0c06977a1cb38e7f560a843054602143f81c533cebf72aa7",
+                                                            "pin_contract_name": "Burner",
+                                                            "pin_contract_address": "0xf233dcee88fe0abe",
+                                                            "imports": []
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+                                                    "pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+                                                    "pin_contract_name": "ViewResolver",
+                                                    "pin_contract_address": "0x1d7e57aa55817448",
+                                                    "imports": []
+                                                },
+                                                {
+                                                    "pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+                                                    "pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+                                                    "pin_contract_name": "ViewResolver",
+                                                    "pin_contract_address": "0x1d7e57aa55817448",
+                                                    "imports": []
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "pin": "fdf38f744b1cccbff5682a29a51efe62d3a596c40784491629cd2a037eed2ba8",
+                                            "pin_self": "b230a59e4f9f68ce0c06977a1cb38e7f560a843054602143f81c533cebf72aa7",
+                                            "pin_contract_name": "Burner",
+                                            "pin_contract_address": "0xf233dcee88fe0abe",
+                                            "imports": []
+                                        },
+                                        {
+                                            "pin": "036cc97a9185de41fdecfbaeffdc9696b0228e3e6ce550046db6c569c6ccfef7",
+                                            "pin_self": "f65b02ca28848f2de264cfe77ffe25e0c331a7604072d001bb72aeabcbbc2114",
+                                            "pin_contract_name": "FlowToken",
+                                            "pin_contract_address": "0x1654653399040a61",
+                                            "imports": [
+                                                {
+                                                    "pin": "fdf38f744b1cccbff5682a29a51efe62d3a596c40784491629cd2a037eed2ba8",
+                                                    "pin_self": "b230a59e4f9f68ce0c06977a1cb38e7f560a843054602143f81c533cebf72aa7",
+                                                    "pin_contract_name": "Burner",
+                                                    "pin_contract_address": "0xf233dcee88fe0abe",
+                                                    "imports": []
+                                                },
+                                                {
+                                                    "pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+                                                    "pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+                                                    "pin_contract_name": "ViewResolver",
+                                                    "pin_contract_address": "0x1d7e57aa55817448",
+                                                    "imports": []
+                                                },
+                                                {
+                                                    "pin": "de4db3d9f9fdb68c0f52bb1f49e7b220db69936fe0685102bcb3d064b691d084",
+                                                    "pin_self": "4a9aa241d030ddc954f792b53f1a8a3ce61d0558f0cd4a139511b980561b6cce",
+                                                    "pin_contract_name": "FungibleTokenMetadataViews",
+                                                    "pin_contract_address": "0xf233dcee88fe0abe",
+                                                    "imports": [
+                                                        {
+                                                            "pin": "fdf38f744b1cccbff5682a29a51efe62d3a596c40784491629cd2a037eed2ba8",
+                                                            "pin_self": "b230a59e4f9f68ce0c06977a1cb38e7f560a843054602143f81c533cebf72aa7",
+                                                            "pin_contract_name": "Burner",
+                                                            "pin_contract_address": "0xf233dcee88fe0abe",
+                                                            "imports": []
+                                                        },
+                                                        {
+                                                            "pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+                                                            "pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+                                                            "pin_contract_name": "ViewResolver",
+                                                            "pin_contract_address": "0x1d7e57aa55817448",
+                                                            "imports": []
+                                                        },
+                                                        {
+                                                            "pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+                                                            "pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+                                                            "pin_contract_name": "ViewResolver",
+                                                            "pin_contract_address": "0x1d7e57aa55817448",
+                                                            "imports": []
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+                                            "pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+                                            "pin_contract_name": "ViewResolver",
+                                            "pin_contract_address": "0x1d7e57aa55817448",
+                                            "imports": []
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "parameters": [
+            {
+                "label": "eventId",
+                "index": 0,
+                "type": "UInt64",
+                "messages": []
+            }
+        ]
+    }
+}
+
