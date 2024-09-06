@@ -5,6 +5,7 @@ import (
 	"flix-indexer/server"
 	"log"
 	"os"
+	"strconv"
 )
 
 func main() {
@@ -16,10 +17,19 @@ func main() {
 		panic(err)
 	}
 
+	port := 8080
+	envPort := os.Getenv("PORT")
+	if envPort != "" {
+		port, err = strconv.Atoi(envPort)
+		if err != nil {
+			panic(err)
+		}
+	}
+
 	httpServer := server.HttpServer{
 		Logger:  logger,
 		Indexer: indexer,
-		Port:    8081,
+		Port:    port,
 	}
 	httpServer.Setup()
 	logger.Printf("starting server on port %d\n", httpServer.Port)
