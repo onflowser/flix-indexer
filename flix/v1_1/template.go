@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/sha256"
 	"encoding/json"
+	"fmt"
 	"github.com/onflow/cadence/runtime/parser"
 	"github.com/turbolent/prettier"
 	"strings"
@@ -36,6 +37,10 @@ func NewFromJson(rawJson []byte) (Template, error) {
 	err := json.Unmarshal(rawJson, &parsed)
 	if err != nil {
 		return Template{}, err
+	}
+
+	if parsed.FVersion != "1.1.0" {
+		return Template{}, fmt.Errorf("unsupported f_version '%s'", parsed.FVersion)
 	}
 
 	astHash, err := cadenceAstHash([]byte(parsed.Data.Cadence.Body))
