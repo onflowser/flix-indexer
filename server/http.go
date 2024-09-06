@@ -1,6 +1,7 @@
 package server
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	v11 "flix-indexer/flix/v1_1"
 	"fmt"
@@ -20,17 +21,38 @@ type ListResponse struct {
 
 func (s *HttpServer) Setup() {
 	http.HandleFunc("/v1.1/templates", func(w http.ResponseWriter, r *http.Request) {
-		response, err := json.Marshal(ListResponse{
-			Data: s.Indexer.List(),
-		})
+		w.Header().Add("Content-Type", "application/json")
 
+		response := ListResponse{
+			Data: []v11.Template{},
+		}
+
+		cadenceBase64 := r.URL.Query().Get("cadence_base64")
+		if cadenceBase64 != "" {
+			cadenceSource, err := base64.StdEncoding.DecodeString(cadenceBase64)
+			if err != nil {
+				w.WriteHeader(http.StatusBadRequest)
+			}
+
+			match, err := s.Indexer.LookupBySource(cadenceSource)
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+			}
+
+			if match != nil {
+				response.Data = []v11.Template{*match}
+			}
+
+		} else {
+			response.Data = s.Indexer.List()
+		}
+
+		jsonResponse, err := json.Marshal(response)
 		if err != nil {
 			s.Logger.Printf("error serializing response: %e", err)
 		}
 
-		w.Header().Add("Content-Type", "application/json")
-
-		_, err = w.Write(response)
+		_, err = w.Write(jsonResponse)
 		if err != nil {
 			s.Logger.Printf("error writing response: %e", err)
 		}
