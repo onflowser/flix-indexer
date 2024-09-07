@@ -6,6 +6,7 @@ require (
 	github.com/go-git/go-git/v5 v5.12.0
 	github.com/onflow/cadence v1.0.0-preview.52
 	github.com/turbolent/prettier v0.0.0-20220320183459-661cc755135d
+	golang.org/x/text v0.14.0
 )
 
 require (

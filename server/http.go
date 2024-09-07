@@ -16,7 +16,7 @@ type HttpServer struct {
 }
 
 type ListResponse struct {
-	Data []v11.Template `json:"data"`
+	Data []*v11.Template `json:"data"`
 }
 
 func (s *HttpServer) Setup() {
@@ -25,7 +25,7 @@ func (s *HttpServer) Setup() {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 
 		response := ListResponse{
-			Data: []v11.Template{},
+			Data: []*v11.Template{},
 		}
 
 		cadenceBase64 := r.URL.Query().Get("cadence_base64")
@@ -44,7 +44,7 @@ func (s *HttpServer) Setup() {
 			}
 
 			if match != nil {
-				response.Data = []v11.Template{*match}
+				response.Data = []*v11.Template{match}
 			}
 
 		} else {

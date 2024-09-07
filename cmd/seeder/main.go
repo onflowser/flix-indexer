@@ -1,15 +1,21 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"golang.org/x/text/language"
 	"log"
 	"os"
 	"os/exec"
 	"path"
 	"path/filepath"
+	"regexp"
 	"strings"
+	"time"
 
+	flixv11 "flix-indexer/flix/v1_1"
 	"github.com/go-git/go-git/v5"
+	"golang.org/x/text/cases"
 )
 
 type Repository struct {
@@ -96,44 +102,93 @@ func flixGenerate(projectPath, sourceFilePath string) (string, error) {
 	)
 	cmd.Dir = projectPath
 
-	output, err := cmd.CombinedOutput()
+	rawTemplate, err := cmd.CombinedOutput()
 	if err != nil {
-		return "", fmt.Errorf("failed to run flow-cli: %v, output: %s", err, output)
+		return "", fmt.Errorf("failed to run flow-cli: %v, rawTemplate: %s", err, rawTemplate)
 	}
 
-	return string(output), nil
+	template, err := flixv11.NewFromJson(rawTemplate)
+	if err != nil {
+		return "", fmt.Errorf("failed to parse template from json: %s", err)
+	}
+
+	existingTitle := template.GetMessage("title", "en-US")
+	if existingTitle == "" {
+		template.SetMessage("title", "en-US", humanizeFileName(sourceFilePath))
+	}
+
+	updatedRawTemplate, err := json.MarshalIndent(template, "", "\t")
+	if err != nil {
+		return "", fmt.Errorf("failed to marshal template to json: %s", err)
+	}
+
+	return string(updatedRawTemplate), nil
 }
 
-func processRepositories(repos []Repository) {
+func humanizeFileName(filePath string) string {
+	rawFileName := path.Base(filePath)
+	rawFileName = strings.ReplaceAll(rawFileName, ".cdc", "")
+	rawFileName = string(regexp.MustCompile("[_-]").ReplaceAll([]byte(rawFileName), []byte(" ")))
+	rawFileName = cases.Title(language.English, cases.Compact).String(rawFileName)
+	return rawFileName
+}
+
+func runEmulator(projectPath string) (*exec.Cmd, error) {
+	cmd := exec.Command("flow", "emulator")
+	cmd.Dir = projectPath
+	cmd.Stdout = os.Stdout
+
+	err := cmd.Start()
+	if err != nil {
+		return cmd, err
+	}
+
+	return cmd, nil
+}
+
+func processRepositories(repos []Repository) error {
 	for _, repo := range repos {
 		repoName := filepath.Base(repo.GitUrl)
-		tempDir := filepath.Join("temp", repoName)
+		repoDir := filepath.Join("temp", repoName)
 
-		if _, err := os.Stat(tempDir); os.IsNotExist(err) {
-			fmt.Printf("Cloning %s into %s...\n", repo.GitUrl, tempDir)
-			err := cloneRepository(repo.GitUrl, tempDir)
+		emulatorCmd, err := runEmulator(repoDir)
+		if err != nil {
+			return err
+		}
+		// Wait for emulator to start up
+		time.Sleep(time.Second)
+
+		if _, err := os.Stat(repoDir); os.IsNotExist(err) {
+			fmt.Printf("Cloning %s into %s...\n", repo.GitUrl, repoDir)
+			err := cloneRepository(repo.GitUrl, repoDir)
 			if err != nil {
 				log.Fatalf("Failed to clone repository: %v\n", err)
 			}
 		}
 
 		for _, interactionPath := range repo.InteractionPaths {
-			files, err := findFiles(tempDir, interactionPath)
+			files, err := findFiles(repoDir, interactionPath)
 			if err != nil {
 				log.Fatalf("Failed to find files: %v\n", err)
 			}
 
 			for _, file := range files {
 				if strings.HasSuffix(file, ".cdc") {
-					processCadenceFile(tempDir, file)
+					processCadenceFile(repoDir, file)
 				}
 			}
 		}
 
 		if cleanupTempFolders {
-			cleanupDirectory(tempDir)
+			cleanupDirectory(repoDir)
+		}
+
+		err = emulatorCmd.Process.Kill()
+		if err != nil {
+			return err
 		}
 	}
+	return nil
 }
 
 func cloneRepository(gitUrl, targetDir string) error {
@@ -162,5 +217,8 @@ func cleanupDirectory(directory string) {
 }
 
 func main() {
-	processRepositories(repos)
+	err := processRepositories(repos)
+	if err != nil {
+		panic(err)
+	}
 }

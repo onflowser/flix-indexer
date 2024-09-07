@@ -7,14 +7,14 @@ import (
 )
 
 type TemplateIndexer struct {
-	store []Template
+	store []*Template
 }
 
 const templatesDirPath = "./templates/"
 
 func NewIndexer() *TemplateIndexer {
 	return &TemplateIndexer{
-		store: make([]Template, 0),
+		store: make([]*Template, 0),
 	}
 }
 
@@ -62,18 +62,18 @@ func (i *TemplateIndexer) SeedFromFs() error {
 	return nil
 }
 
-func (i *TemplateIndexer) add(template Template) {
+func (i *TemplateIndexer) add(template *Template) {
 	i.store = append(i.store, template)
 }
 
-func (i *TemplateIndexer) List() []Template {
+func (i *TemplateIndexer) List() []*Template {
 	return i.store
 }
 
 func (i *TemplateIndexer) GetByID(id string) *Template {
 	for _, template := range i.store {
-		if template.ID() == id {
-			return &template
+		if template.Id == id {
+			return template
 		}
 	}
 	return nil
@@ -86,7 +86,7 @@ func (i *TemplateIndexer) GetBySource(cadenceSource []byte) (*Template, error) {
 			return nil, err
 		}
 		if isMatch {
-			return &template, nil
+			return template, nil
 		}
 	}
 	return nil, nil
