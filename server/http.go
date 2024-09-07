@@ -32,12 +32,15 @@ func (s *HttpServer) Setup() {
 		if cadenceBase64 != "" {
 			cadenceSource, err := base64.StdEncoding.DecodeString(cadenceBase64)
 			if err != nil {
+				s.Logger.Printf("decoding cadence base64 failed: %e\n", err)
 				w.WriteHeader(http.StatusBadRequest)
 			}
 
 			match, err := s.Indexer.GetBySource(cadenceSource)
 			if err != nil {
+				s.Logger.Printf("lookup by cadence source failed: %e\n", err)
 				w.WriteHeader(http.StatusInternalServerError)
+				return
 			}
 
 			if match != nil {
@@ -50,12 +53,16 @@ func (s *HttpServer) Setup() {
 
 		jsonResponse, err := json.Marshal(response)
 		if err != nil {
-			s.Logger.Printf("error serializing response: %e", err)
+			s.Logger.Printf("error serializing response: %e\n", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
 		}
 
 		_, err = w.Write(jsonResponse)
 		if err != nil {
-			s.Logger.Printf("error writing response: %e", err)
+			s.Logger.Printf("error writing response: %e\n", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
 		}
 	})
 
@@ -71,12 +78,16 @@ func (s *HttpServer) Setup() {
 
 		jsonResponse, err := json.Marshal(response)
 		if err != nil {
-			s.Logger.Printf("error serializing response: %e", err)
+			s.Logger.Printf("error serializing response: %e\n", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
 		}
 
 		_, err = w.Write(jsonResponse)
 		if err != nil {
-			s.Logger.Printf("error writing response: %e", err)
+			s.Logger.Printf("error writing response: %e\n", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
 		}
 	})
 }
