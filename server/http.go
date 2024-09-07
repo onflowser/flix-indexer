@@ -21,7 +21,8 @@ type ListResponse struct {
 
 func (s *HttpServer) Setup() {
 	http.HandleFunc("/v1.1/templates", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Add("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 
 		response := ListResponse{
 			Data: []v11.Template{},
@@ -59,7 +60,8 @@ func (s *HttpServer) Setup() {
 	})
 
 	http.HandleFunc("/v1.1/templates/{id}", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Add("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 
 		response := s.Indexer.GetByID(r.PathValue("id"))
 		if response == nil {
