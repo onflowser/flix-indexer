@@ -15,3 +15,10 @@ GET /v1.1/templates
 GET /v1.1/templates?cadence_base64={base64 encoded cadence source code}
     => { data: InteractionTemplate[] }
 ```
+
+### Get template by ID
+```
+GET /v1.1/templates/{id}
+    => InteractionTemplate
+```
+
