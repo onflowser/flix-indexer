@@ -6,7 +6,17 @@
     "data": {
         "type": "transaction",
         "interface": "",
-        "messages": null,
+        "messages": [
+            {
+                "key": "title",
+                "i18n": [
+                    {
+                        "tag": "en-US",
+                        "translation": "Transfer FLOW from COA to EVM"
+                    }
+                ]
+            }
+        ],
         "cadence": {
             "body": "import \"EVM\"\n\n/// Transfers FLOW to another EVM address from the signer's COA\ntransaction(to: String, amount: UInt) {\n\n    let recipient: EVM.EVMAddress\n    let recipientPreBalance: UInt\n    let coa: auth(EVM.Call) \u0026EVM.CadenceOwnedAccount\n    \n    prepare(signer: auth(BorrowValue) \u0026Account) {\n        self.recipient = EVM.addressFromString(to)\n        self.recipientPreBalance = self.recipient.balance().attoflow\n        self.coa = signer.storage.borrow\u003cauth(EVM.Call) \u0026EVM.CadenceOwnedAccount\u003e(from: /storage/evm)\n            ?? panic(\"No COA found in signer's account\")\n    }\n\n    execute {\n        let res = self.coa.call(\n            to: self.recipient,\n            data: [],\n            gasLimit: 100_000,\n            value: EVM.Balance(attoflow: amount)\n        )\n\n        assert(res.status == EVM.Status.successful, message: \"Failed to transfer FLOW to EVM address\")\n    }\n\n    post {\n        self.recipient.balance().attoflow == self.recipientPreBalance + amount:\n            \"Problem transferring value to EVM address\"\n    }\n}",
             "network_pins": [

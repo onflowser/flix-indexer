@@ -1,135 +1,137 @@
-
 {
-    "f_type": "InteractionTemplate",
-    "f_version": "1.1.0",
-    "id": "e27b766ebe59ce81d168d83fe43fcc790eac3137998d4dda1bb5961eadd1cad3",
-    "data": {
-        "type": "script",
-        "interface": "",
-        "messages": null,
-        "cadence": {
-            "body": "import \"FungibleToken\"\n\naccess(all) fun main(address: Address): Bool {\n  return getAccount(address).capabilities.borrow\u003c\u0026{FungibleToken.Balance}\u003e(/public/flowTokenBalance) != nil\n}",
-            "network_pins": [
-                {
-                    "network": "emulator",
-                    "pin_self": "ce2b631456e59f1826d52c8df42da4a6b2b03fee527b4898b791d29261145c5a"
-                },
-                {
-                    "network": "mainnet",
-                    "pin_self": "6b413fefbd9e4dec2e55e9d33e91508f69498c1802e3b12fddd4578ac34df203"
-                },
-                {
-                    "network": "testnet",
-                    "pin_self": "0cbaeab22f54327ddf5e2eca418b1223a6fc939b9ba09a9883c5de27a7ab62f5"
-                }
-            ]
-        },
-        "dependencies": [
-            {
-                "contracts": [
-                    {
-                        "contract": "FungibleToken",
-                        "networks": [
-                            {
-                                "network": "mainnet",
-                                "address": "0xf233dcee88fe0abe",
-                                "dependency_pin_block_height": 86158980,
-                                "dependency_pin": {
-                                    "pin": "2ebe6fb33e21006b9bc37275534d199a3768639c0cd531a233d81576dfcb2602",
-                                    "pin_self": "b913af1e763599b37d54e6e439dd4b435b61c9c1d9fee3628427099f05d4d3f0",
-                                    "pin_contract_name": "FungibleToken",
-                                    "pin_contract_address": "0xf233dcee88fe0abe",
-                                    "imports": [
-                                        {
-                                            "pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
-                                            "pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
-                                            "pin_contract_name": "ViewResolver",
-                                            "pin_contract_address": "0x1d7e57aa55817448",
-                                            "imports": []
-                                        },
-                                        {
-                                            "pin": "fdf38f744b1cccbff5682a29a51efe62d3a596c40784491629cd2a037eed2ba8",
-                                            "pin_self": "b230a59e4f9f68ce0c06977a1cb38e7f560a843054602143f81c533cebf72aa7",
-                                            "pin_contract_name": "Burner",
-                                            "pin_contract_address": "0xf233dcee88fe0abe",
-                                            "imports": []
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "network": "testnet",
-                                "address": "0x9a0766d93b6608b7",
-                                "dependency_pin_block_height": 215084123,
-                                "dependency_pin": {
-                                    "pin": "1dcfe88a8f608a664b492e23dfdfdcc0f8d13f5261c918801f196f111584a9ef",
-                                    "pin_self": "1e23db980500f7f0b3112dbec14ee03079525c3e490532981e333607a0d72648",
-                                    "pin_contract_name": "FungibleToken",
-                                    "pin_contract_address": "0x9a0766d93b6608b7",
-                                    "imports": [
-                                        {
-                                            "pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
-                                            "pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
-                                            "pin_contract_name": "ViewResolver",
-                                            "pin_contract_address": "0x631e88ae7f1d7c20",
-                                            "imports": []
-                                        },
-                                        {
-                                            "pin": "fdf38f744b1cccbff5682a29a51efe62d3a596c40784491629cd2a037eed2ba8",
-                                            "pin_self": "b230a59e4f9f68ce0c06977a1cb38e7f560a843054602143f81c533cebf72aa7",
-                                            "pin_contract_name": "Burner",
-                                            "pin_contract_address": "0x9a0766d93b6608b7",
-                                            "imports": []
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "network": "emulator",
-                                "address": "0xee82856bf20e2aa6",
-                                "dependency_pin_block_height": 0,
-                                "dependency_pin": {
-                                    "pin": "e9e7b397cf525d4d4dbdd91c7c2ac6c3cb2575ec8ee6459a06aa3429254d2eb2",
-                                    "pin_self": "d23879b5abd0070ddfec85fdde50398c6617d2f5b35a2eeb1f873c6f0658204f",
-                                    "pin_contract_name": "FungibleToken",
-                                    "pin_contract_address": "0xee82856bf20e2aa6",
-                                    "imports": [
-                                        {
-                                            "pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
-                                            "pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
-                                            "pin_contract_name": "ViewResolver",
-                                            "pin_contract_address": "0xf8d6e0586b0a20c7",
-                                            "imports": []
-                                        },
-                                        {
-                                            "pin": "fdf38f744b1cccbff5682a29a51efe62d3a596c40784491629cd2a037eed2ba8",
-                                            "pin_self": "b230a59e4f9f68ce0c06977a1cb38e7f560a843054602143f81c533cebf72aa7",
-                                            "pin_contract_name": "Burner",
-                                            "pin_contract_address": "0xf8d6e0586b0a20c7",
-                                            "imports": []
-                                        }
-                                    ]
-                                }
-                            }
-                        ]
-                    }
-                ]
-            }
-        ],
-        "parameters": [
-            {
-                "label": "address",
-                "index": 0,
-                "type": "Address",
-                "messages": []
-            }
-        ],
-        "output": {
-            "label": "result",
-            "index": 0,
-            "type": "Bool",
-            "messages": []
-        }
-    }
+	"f_type": "InteractionTemplate",
+	"f_version": "1.1.0",
+	"id": "1af741ab80e5b984b1b68760bad92d0e892d27aabceef90ae39467b261becec0",
+	"data": {
+		"type": "script",
+		"interface": "",
+		"cadence": {
+			"body": "import \"FungibleToken\"\n\naccess(all) fun main(address: Address): Bool {\n  return getAccount(address).capabilities.borrow\u003c\u0026{FungibleToken.Balance}\u003e(/public/flowTokenBalance) != nil\n}",
+			"network_pins": [
+				{
+					"network": "mainnet",
+					"pin_self": "6b413fefbd9e4dec2e55e9d33e91508f69498c1802e3b12fddd4578ac34df203"
+				},
+				{
+					"network": "testnet",
+					"pin_self": "0cbaeab22f54327ddf5e2eca418b1223a6fc939b9ba09a9883c5de27a7ab62f5"
+				},
+				{
+					"network": "emulator",
+					"pin_self": "ce2b631456e59f1826d52c8df42da4a6b2b03fee527b4898b791d29261145c5a"
+				}
+			]
+		},
+		"parameters": [
+			{
+				"label": "address",
+				"index": 0,
+				"type": "Address",
+				"messages": []
+			}
+		],
+		"dependencies": [
+			{
+				"contracts": [
+					{
+						"contract": "FungibleToken",
+						"networks": [
+							{
+								"network": "emulator",
+								"address": "0xee82856bf20e2aa6",
+								"dependency_pin_block_height": 0,
+								"dependency_pin": {
+									"pin": "e9e7b397cf525d4d4dbdd91c7c2ac6c3cb2575ec8ee6459a06aa3429254d2eb2",
+									"pin_self": "d23879b5abd0070ddfec85fdde50398c6617d2f5b35a2eeb1f873c6f0658204f",
+									"pin_contract_name": "FungibleToken",
+									"pin_contract_address": "0xee82856bf20e2aa6",
+									"imports": [
+										{
+											"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+											"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+											"pin_contract_name": "ViewResolver",
+											"pin_contract_address": "0xf8d6e0586b0a20c7",
+											"imports": []
+										},
+										{
+											"pin": "fdf38f744b1cccbff5682a29a51efe62d3a596c40784491629cd2a037eed2ba8",
+											"pin_self": "b230a59e4f9f68ce0c06977a1cb38e7f560a843054602143f81c533cebf72aa7",
+											"pin_contract_name": "Burner",
+											"pin_contract_address": "0xf8d6e0586b0a20c7",
+											"imports": []
+										}
+									]
+								}
+							},
+							{
+								"network": "mainnet",
+								"address": "0xf233dcee88fe0abe",
+								"dependency_pin_block_height": 86393460,
+								"dependency_pin": {
+									"pin": "2ebe6fb33e21006b9bc37275534d199a3768639c0cd531a233d81576dfcb2602",
+									"pin_self": "b913af1e763599b37d54e6e439dd4b435b61c9c1d9fee3628427099f05d4d3f0",
+									"pin_contract_name": "FungibleToken",
+									"pin_contract_address": "0xf233dcee88fe0abe",
+									"imports": [
+										{
+											"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+											"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+											"pin_contract_name": "ViewResolver",
+											"pin_contract_address": "0x1d7e57aa55817448",
+											"imports": []
+										},
+										{
+											"pin": "fdf38f744b1cccbff5682a29a51efe62d3a596c40784491629cd2a037eed2ba8",
+											"pin_self": "b230a59e4f9f68ce0c06977a1cb38e7f560a843054602143f81c533cebf72aa7",
+											"pin_contract_name": "Burner",
+											"pin_contract_address": "0xf233dcee88fe0abe",
+											"imports": []
+										}
+									]
+								}
+							},
+							{
+								"network": "testnet",
+								"address": "0x9a0766d93b6608b7",
+								"dependency_pin_block_height": 215459134,
+								"dependency_pin": {
+									"pin": "1dcfe88a8f608a664b492e23dfdfdcc0f8d13f5261c918801f196f111584a9ef",
+									"pin_self": "1e23db980500f7f0b3112dbec14ee03079525c3e490532981e333607a0d72648",
+									"pin_contract_name": "FungibleToken",
+									"pin_contract_address": "0x9a0766d93b6608b7",
+									"imports": [
+										{
+											"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+											"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+											"pin_contract_name": "ViewResolver",
+											"pin_contract_address": "0x631e88ae7f1d7c20",
+											"imports": []
+										},
+										{
+											"pin": "fdf38f744b1cccbff5682a29a51efe62d3a596c40784491629cd2a037eed2ba8",
+											"pin_self": "b230a59e4f9f68ce0c06977a1cb38e7f560a843054602143f81c533cebf72aa7",
+											"pin_contract_name": "Burner",
+											"pin_contract_address": "0x9a0766d93b6608b7",
+											"imports": []
+										}
+									]
+								}
+							}
+						]
+					}
+				]
+			}
+		],
+		"messages": [
+			{
+				"key": "title",
+				"i18n": [
+					{
+						"tag": "en-US",
+						"translation": "Validate Address Existance"
+					}
+				]
+			}
+		]
+	}
 }
-

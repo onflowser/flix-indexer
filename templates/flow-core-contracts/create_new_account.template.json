@@ -1,56 +1,64 @@
-
 {
-    "f_type": "InteractionTemplate",
-    "f_version": "1.1.0",
-    "id": "66c0ff81fa929ca9ecbc54f4ad5241d3ffdca208a30d55a1a0191881f5d0aae1",
-    "data": {
-        "type": "transaction",
-        "interface": "",
-        "messages": null,
-        "cadence": {
-            "body": "import Crypto\n\ntransaction(key: String, signatureAlgorithm: UInt8, hashAlgorithm: UInt8, weight: UFix64) {\n\tprepare(signer: auth(BorrowValue, Storage) \u0026Account) {\n\t\tpre {\n\t\t\tsignatureAlgorithm \u003e= 1 \u0026\u0026 signatureAlgorithm \u003c= 3: \"Must provide a signature algorithm raw value that is 1, 2, or 3\"\n\t\t\thashAlgorithm \u003e= 1 \u0026\u0026 hashAlgorithm \u003c= 6: \"Must provide a hash algorithm raw value that is between 1 and 6\"\n\t\t\tweight \u003c= 1000.0: \"The key weight must be between 0 and 1000\"\n\t\t}\n\n\t\tlet publicKey = PublicKey(\n\t\t\tpublicKey: key.decodeHex(),\n\t\t\tsignatureAlgorithm: SignatureAlgorithm(rawValue: signatureAlgorithm)!\n\t\t)\n\n\t\tlet account = Account(payer: signer)\n\n\t\taccount.keys.add(publicKey: publicKey, hashAlgorithm: HashAlgorithm(rawValue: hashAlgorithm)!, weight: weight)\n\t}\n}",
-            "network_pins": [
-                {
-                    "network": "emulator",
-                    "pin_self": "4b3e0b2e7d51862712d49ca539ab7b3316de7efefa4db10ada08ad6e25c88e95"
-                },
-                {
-                    "network": "mainnet",
-                    "pin_self": "4b3e0b2e7d51862712d49ca539ab7b3316de7efefa4db10ada08ad6e25c88e95"
-                },
-                {
-                    "network": "testnet",
-                    "pin_self": "4b3e0b2e7d51862712d49ca539ab7b3316de7efefa4db10ada08ad6e25c88e95"
-                }
-            ]
-        },
-        "dependencies": [],
-        "parameters": [
-            {
-                "label": "key",
-                "index": 0,
-                "type": "String",
-                "messages": []
-            },
-            {
-                "label": "signatureAlgorithm",
-                "index": 1,
-                "type": "UInt8",
-                "messages": []
-            },
-            {
-                "label": "hashAlgorithm",
-                "index": 2,
-                "type": "UInt8",
-                "messages": []
-            },
-            {
-                "label": "weight",
-                "index": 3,
-                "type": "UFix64",
-                "messages": []
-            }
-        ]
-    }
+	"f_type": "InteractionTemplate",
+	"f_version": "1.1.0",
+	"id": "66c0ff81fa929ca9ecbc54f4ad5241d3ffdca208a30d55a1a0191881f5d0aae1",
+	"data": {
+		"type": "transaction",
+		"interface": "",
+		"cadence": {
+			"body": "import Crypto\n\ntransaction(key: String, signatureAlgorithm: UInt8, hashAlgorithm: UInt8, weight: UFix64) {\n\tprepare(signer: auth(BorrowValue, Storage) \u0026Account) {\n\t\tpre {\n\t\t\tsignatureAlgorithm \u003e= 1 \u0026\u0026 signatureAlgorithm \u003c= 3: \"Must provide a signature algorithm raw value that is 1, 2, or 3\"\n\t\t\thashAlgorithm \u003e= 1 \u0026\u0026 hashAlgorithm \u003c= 6: \"Must provide a hash algorithm raw value that is between 1 and 6\"\n\t\t\tweight \u003c= 1000.0: \"The key weight must be between 0 and 1000\"\n\t\t}\n\n\t\tlet publicKey = PublicKey(\n\t\t\tpublicKey: key.decodeHex(),\n\t\t\tsignatureAlgorithm: SignatureAlgorithm(rawValue: signatureAlgorithm)!\n\t\t)\n\n\t\tlet account = Account(payer: signer)\n\n\t\taccount.keys.add(publicKey: publicKey, hashAlgorithm: HashAlgorithm(rawValue: hashAlgorithm)!, weight: weight)\n\t}\n}",
+			"network_pins": [
+				{
+					"network": "emulator",
+					"pin_self": "4b3e0b2e7d51862712d49ca539ab7b3316de7efefa4db10ada08ad6e25c88e95"
+				},
+				{
+					"network": "mainnet",
+					"pin_self": "4b3e0b2e7d51862712d49ca539ab7b3316de7efefa4db10ada08ad6e25c88e95"
+				},
+				{
+					"network": "testnet",
+					"pin_self": "4b3e0b2e7d51862712d49ca539ab7b3316de7efefa4db10ada08ad6e25c88e95"
+				}
+			]
+		},
+		"parameters": [
+			{
+				"label": "key",
+				"index": 0,
+				"type": "String",
+				"messages": []
+			},
+			{
+				"label": "signatureAlgorithm",
+				"index": 1,
+				"type": "UInt8",
+				"messages": []
+			},
+			{
+				"label": "hashAlgorithm",
+				"index": 2,
+				"type": "UInt8",
+				"messages": []
+			},
+			{
+				"label": "weight",
+				"index": 3,
+				"type": "UFix64",
+				"messages": []
+			}
+		],
+		"dependencies": [],
+		"messages": [
+			{
+				"key": "title",
+				"i18n": [
+					{
+						"tag": "en-US",
+						"translation": "Create New Account"
+					}
+				]
+			}
+		]
+	}
 }
-

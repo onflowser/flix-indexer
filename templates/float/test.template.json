@@ -1,37 +1,39 @@
-
 {
-    "f_type": "InteractionTemplate",
-    "f_version": "1.1.0",
-    "id": "5ed12c325176669bb5dc6703679dfe3414924ed921e5c42b800e9a10c7e8b9d1",
-    "data": {
-        "type": "script",
-        "interface": "",
-        "messages": null,
-        "cadence": {
-            "body": "\naccess(all) fun main(): [UInt8] {\n  let thing = \"02374732ab0\".decodeHex()\n  return thing\n}",
-            "network_pins": [
-                {
-                    "network": "emulator",
-                    "pin_self": "4621ab4678d1e2d2e2de74039a6f743c7900b9fa496a28a311d654241135f111"
-                },
-                {
-                    "network": "mainnet",
-                    "pin_self": "4621ab4678d1e2d2e2de74039a6f743c7900b9fa496a28a311d654241135f111"
-                },
-                {
-                    "network": "testnet",
-                    "pin_self": "4621ab4678d1e2d2e2de74039a6f743c7900b9fa496a28a311d654241135f111"
-                }
-            ]
-        },
-        "dependencies": null,
-        "parameters": null,
-        "output": {
-            "label": "result",
-            "index": 0,
-            "type": "[UInt8]",
-            "messages": []
-        }
-    }
+	"f_type": "InteractionTemplate",
+	"f_version": "1.1.0",
+	"id": "5ed12c325176669bb5dc6703679dfe3414924ed921e5c42b800e9a10c7e8b9d1",
+	"data": {
+		"type": "script",
+		"interface": "",
+		"cadence": {
+			"body": "\naccess(all) fun main(): [UInt8] {\n  let thing = \"02374732ab0\".decodeHex()\n  return thing\n}",
+			"network_pins": [
+				{
+					"network": "emulator",
+					"pin_self": "4621ab4678d1e2d2e2de74039a6f743c7900b9fa496a28a311d654241135f111"
+				},
+				{
+					"network": "mainnet",
+					"pin_self": "4621ab4678d1e2d2e2de74039a6f743c7900b9fa496a28a311d654241135f111"
+				},
+				{
+					"network": "testnet",
+					"pin_self": "4621ab4678d1e2d2e2de74039a6f743c7900b9fa496a28a311d654241135f111"
+				}
+			]
+		},
+		"parameters": null,
+		"dependencies": null,
+		"messages": [
+			{
+				"key": "title",
+				"i18n": [
+					{
+						"tag": "en-US",
+						"translation": "Test"
+					}
+				]
+			}
+		]
+	}
 }
-

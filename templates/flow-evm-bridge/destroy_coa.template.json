@@ -6,7 +6,17 @@
     "data": {
         "type": "transaction",
         "interface": "",
-        "messages": null,
+        "messages": [
+            {
+                "key": "title",
+                "i18n": [
+                    {
+                        "tag": "en-US",
+                        "translation": "Destroy COA"
+                    }
+                ]
+            }
+        ],
         "cadence": {
             "body": "import \"EVM\"\n\n/// !!! CAUTION: Destroys the COA in the signer's account !!! \n///\ntransaction {\n    prepare(signer: auth(LoadValue) \u0026Account) {\n        destroy signer.storage.load\u003c@EVM.CadenceOwnedAccount\u003e(from: /storage/evm)!\n    }\n}\n",
             "network_pins": [

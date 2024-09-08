@@ -114,7 +114,7 @@ func (t *Template) MatchesSource(source []byte) (bool, error) {
 }
 
 func (t *Template) GetMessage(key, tag string) string {
-	for _, msg := range t.Messages {
+	for _, msg := range t.Data.Messages {
 		if msg.Key == key {
 			for _, msgI18n := range msg.I18n {
 				if msgI18n.Tag == tag {
@@ -127,7 +127,7 @@ func (t *Template) GetMessage(key, tag string) string {
 }
 
 func (t *Template) SetMessage(key, tag, translation string) {
-	for _, msg := range t.Messages {
+	for _, msg := range t.Data.Messages {
 		if msg.Key == key {
 			for _, msgI18n := range msg.I18n {
 				if msgI18n.Tag == tag {
@@ -138,7 +138,7 @@ func (t *Template) SetMessage(key, tag, translation string) {
 		}
 	}
 
-	t.Messages = append(t.Messages, message{
+	t.Data.Messages = append(t.Data.Messages, message{
 		Key: key,
 		I18n: []i18n{
 			{
