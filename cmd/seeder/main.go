@@ -40,6 +40,10 @@ var repos = []Repository{
 			"cadence/transactions/bridge/tokens/*",
 			"cadence/transactions/evm/*",
 			"cadence/transactions/flow-token/*",
+			"cadence/scripts/bridge/*",
+			"cadence/scripts/evm/*",
+			"cadence/scripts/nft/*",
+			"cadence/scripts/tokens/*",
 		},
 	},
 	{

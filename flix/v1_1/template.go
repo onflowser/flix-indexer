@@ -155,8 +155,6 @@ func cadenceAstHash(source []byte) ([]byte, error) {
 		return nil, err
 	}
 
-	program.Doc()
-
 	var prettySource strings.Builder
 	prettier.Prettier(&prettySource, program.Doc(), 80, "    ")
 

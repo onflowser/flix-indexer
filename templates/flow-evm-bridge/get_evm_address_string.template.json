@@ -1,169 +1,41 @@
 {
 	"f_type": "InteractionTemplate",
 	"f_version": "1.1.0",
-	"id": "be38c22ee281da418356e2bcef4d4dfb26d780c0c0b174e9e930ec51fbb7c0de",
+	"id": "3e7c313ce33ff2717f5d2d6426f4240e64cb8207ed09d536cf6ebb315573eab8",
 	"data": {
-		"type": "transaction",
+		"type": "script",
 		"interface": "",
 		"cadence": {
-			"body": "import \"EVM\"\n\n/// !!! CAUTION: Destroys the COA in the signer's account !!! \n///\ntransaction {\n    prepare(signer: auth(LoadValue) \u0026Account) {\n        destroy signer.storage.load\u003c@EVM.CadenceOwnedAccount\u003e(from: /storage/evm)!\n    }\n}\n",
+			"body": "import \"EVM\"\n\n/// Returns the hex encoded address of the COA in the given Flow address\n///\naccess(all) fun main(flowAddress: Address): String? {\n    if let address: EVM.EVMAddress = getAuthAccount\u003cauth(BorrowValue) \u0026Account\u003e(flowAddress)\n        .storage.borrow\u003c\u0026EVM.CadenceOwnedAccount\u003e(from: /storage/evm)?.address() {\n        let bytes: [UInt8] = []\n        for byte in address.bytes {\n            bytes.append(byte)\n        }\n        return String.encodeHex(bytes)\n    }\n    return nil\n}\n",
 			"network_pins": [
 				{
+					"network": "emulator",
+					"pin_self": "4e40f9cdf26a32198c087f16c1af02ab94da52f6063e0454ac5e7579e7efd1af"
+				},
+				{
 					"network": "mainnet",
-					"pin_self": "a0a0aeab55babca1018f6e764c2c202c352d2f5fa5b3f7417d3a48e09a885816"
+					"pin_self": "c3cb31853c964f9aa291e9f5ad63454fbae9c11aff33212bb6f6e2f262493d1c"
 				},
 				{
 					"network": "testnet",
-					"pin_self": "02ede66efe2cda363c6a711bebf64203f3f0f82d52f3686126d054918fb8e597"
-				},
-				{
-					"network": "emulator",
-					"pin_self": "f34362011f2b6fdeb8b183c9a085233c17d648ed69c83d9b7d9fa2a67dc88466"
+					"pin_self": "e9713df1132b271bf7266ba7f5417d46ccbcfbc533140f336de77ec423e71258"
 				}
 			]
 		},
-		"parameters": null,
+		"parameters": [
+			{
+				"label": "flowAddress",
+				"index": 0,
+				"type": "Address",
+				"messages": []
+			}
+		],
 		"dependencies": [
 			{
 				"contracts": [
 					{
 						"contract": "EVM",
 						"networks": [
-							{
-								"network": "previewnet",
-								"address": "b6763b4399a888c8",
-								"dependency_pin_block_height": 0,
-								"dependency_pin": {
-									"pin": "",
-									"pin_self": "",
-									"pin_contract_name": "",
-									"pin_contract_address": "",
-									"imports": null
-								}
-							},
-							{
-								"network": "testnet",
-								"address": "8c5303eaa26202d6",
-								"dependency_pin_block_height": 215463991,
-								"dependency_pin": {
-									"pin": "b5f7be61ff7a74e513ce855f3872680c9fed890880ca4632f7dad5a3c7d03f39",
-									"pin_self": "cc202e6258de50afe6b135c6e0bfed2ed19b7e6cc2b46f839e18daa001b522df",
-									"pin_contract_name": "EVM",
-									"pin_contract_address": "0x8c5303eaa26202d6",
-									"imports": [
-										{
-											"pin": "b12511cf8bc6237d06580340c0118c624dc4f4f0faee8d073417c9b1e09ae65f",
-											"pin_self": "8396ebca01cd8d9ada9cd04f8a50dd85c2725fbb893d5a6a35ac9598237b725f",
-											"pin_contract_name": "NonFungibleToken",
-											"pin_contract_address": "0x631e88ae7f1d7c20",
-											"imports": [
-												{
-													"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
-													"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
-													"pin_contract_name": "ViewResolver",
-													"pin_contract_address": "0x631e88ae7f1d7c20",
-													"imports": []
-												}
-											]
-										},
-										{
-											"pin": "1dcfe88a8f608a664b492e23dfdfdcc0f8d13f5261c918801f196f111584a9ef",
-											"pin_self": "1e23db980500f7f0b3112dbec14ee03079525c3e490532981e333607a0d72648",
-											"pin_contract_name": "FungibleToken",
-											"pin_contract_address": "0x9a0766d93b6608b7",
-											"imports": [
-												{
-													"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
-													"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
-													"pin_contract_name": "ViewResolver",
-													"pin_contract_address": "0x631e88ae7f1d7c20",
-													"imports": []
-												},
-												{
-													"pin": "fdf38f744b1cccbff5682a29a51efe62d3a596c40784491629cd2a037eed2ba8",
-													"pin_self": "b230a59e4f9f68ce0c06977a1cb38e7f560a843054602143f81c533cebf72aa7",
-													"pin_contract_name": "Burner",
-													"pin_contract_address": "0x9a0766d93b6608b7",
-													"imports": []
-												}
-											]
-										},
-										{
-											"pin": "dedb9ba10e199f6e774b54959f18bb5468221dfb2e749fb708053d0e1b857b15",
-											"pin_self": "2a54d9460bc7fc58eb0b7c11563882d5835ddf614a127746d8d2278fc74adcdf",
-											"pin_contract_name": "FlowToken",
-											"pin_contract_address": "0x7e60df042a9c0868",
-											"imports": [
-												{
-													"pin": "fdf38f744b1cccbff5682a29a51efe62d3a596c40784491629cd2a037eed2ba8",
-													"pin_self": "b230a59e4f9f68ce0c06977a1cb38e7f560a843054602143f81c533cebf72aa7",
-													"pin_contract_name": "Burner",
-													"pin_contract_address": "0x9a0766d93b6608b7",
-													"imports": []
-												},
-												{
-													"pin": "da07e3342de317759cca24b2e4d85a30b01a4e8936effe05656ae21502d9f494",
-													"pin_self": "60cb90ca0c0135f6f9ac74d87c4cb55350da74ed985f804b514754ffe1c04b48",
-													"pin_contract_name": "MetadataViews",
-													"pin_contract_address": "0x631e88ae7f1d7c20",
-													"imports": [
-														{
-															"pin": "fdf38f744b1cccbff5682a29a51efe62d3a596c40784491629cd2a037eed2ba8",
-															"pin_self": "b230a59e4f9f68ce0c06977a1cb38e7f560a843054602143f81c533cebf72aa7",
-															"pin_contract_name": "Burner",
-															"pin_contract_address": "0x9a0766d93b6608b7",
-															"imports": []
-														},
-														{
-															"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
-															"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
-															"pin_contract_name": "ViewResolver",
-															"pin_contract_address": "0x631e88ae7f1d7c20",
-															"imports": []
-														},
-														{
-															"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
-															"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
-															"pin_contract_name": "ViewResolver",
-															"pin_contract_address": "0x631e88ae7f1d7c20",
-															"imports": []
-														}
-													]
-												},
-												{
-													"pin": "35eb92cb2e0e83ad91d6238f8bce57f7de3cefdf7c35faf343f3df879a88ba12",
-													"pin_self": "be600421a8b9799c427e7e69fcb5c94fba7f4f00277840f30c5cbb4b08f1f890",
-													"pin_contract_name": "FungibleTokenMetadataViews",
-													"pin_contract_address": "0x9a0766d93b6608b7",
-													"imports": [
-														{
-															"pin": "fdf38f744b1cccbff5682a29a51efe62d3a596c40784491629cd2a037eed2ba8",
-															"pin_self": "b230a59e4f9f68ce0c06977a1cb38e7f560a843054602143f81c533cebf72aa7",
-															"pin_contract_name": "Burner",
-															"pin_contract_address": "0x9a0766d93b6608b7",
-															"imports": []
-														},
-														{
-															"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
-															"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
-															"pin_contract_name": "ViewResolver",
-															"pin_contract_address": "0x631e88ae7f1d7c20",
-															"imports": []
-														},
-														{
-															"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
-															"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
-															"pin_contract_name": "ViewResolver",
-															"pin_contract_address": "0x631e88ae7f1d7c20",
-															"imports": []
-														}
-													]
-												}
-											]
-										}
-									]
-								}
-							},
 							{
 								"network": "emulator",
 								"address": "f8d6e0586b0a20c7",
@@ -290,7 +162,7 @@
 							{
 								"network": "mainnet",
 								"address": "e467b9dd11fa00df",
-								"dependency_pin_block_height": 86396508,
+								"dependency_pin_block_height": 86397048,
 								"dependency_pin": {
 									"pin": "eaf2d1f36261149c8cdfbea587f9a96d2b79e90d51d35961b50e6531399eb962",
 									"pin_self": "435dde3fff9ba30e1a45271915c2e0b89af27a20839657abcb13a7571b50c219",
@@ -409,6 +281,141 @@
 										}
 									]
 								}
+							},
+							{
+								"network": "previewnet",
+								"address": "b6763b4399a888c8",
+								"dependency_pin_block_height": 0,
+								"dependency_pin": {
+									"pin": "",
+									"pin_self": "",
+									"pin_contract_name": "",
+									"pin_contract_address": "",
+									"imports": null
+								}
+							},
+							{
+								"network": "testnet",
+								"address": "8c5303eaa26202d6",
+								"dependency_pin_block_height": 215464869,
+								"dependency_pin": {
+									"pin": "b5f7be61ff7a74e513ce855f3872680c9fed890880ca4632f7dad5a3c7d03f39",
+									"pin_self": "cc202e6258de50afe6b135c6e0bfed2ed19b7e6cc2b46f839e18daa001b522df",
+									"pin_contract_name": "EVM",
+									"pin_contract_address": "0x8c5303eaa26202d6",
+									"imports": [
+										{
+											"pin": "b12511cf8bc6237d06580340c0118c624dc4f4f0faee8d073417c9b1e09ae65f",
+											"pin_self": "8396ebca01cd8d9ada9cd04f8a50dd85c2725fbb893d5a6a35ac9598237b725f",
+											"pin_contract_name": "NonFungibleToken",
+											"pin_contract_address": "0x631e88ae7f1d7c20",
+											"imports": [
+												{
+													"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+													"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+													"pin_contract_name": "ViewResolver",
+													"pin_contract_address": "0x631e88ae7f1d7c20",
+													"imports": []
+												}
+											]
+										},
+										{
+											"pin": "1dcfe88a8f608a664b492e23dfdfdcc0f8d13f5261c918801f196f111584a9ef",
+											"pin_self": "1e23db980500f7f0b3112dbec14ee03079525c3e490532981e333607a0d72648",
+											"pin_contract_name": "FungibleToken",
+											"pin_contract_address": "0x9a0766d93b6608b7",
+											"imports": [
+												{
+													"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+													"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+													"pin_contract_name": "ViewResolver",
+													"pin_contract_address": "0x631e88ae7f1d7c20",
+													"imports": []
+												},
+												{
+													"pin": "fdf38f744b1cccbff5682a29a51efe62d3a596c40784491629cd2a037eed2ba8",
+													"pin_self": "b230a59e4f9f68ce0c06977a1cb38e7f560a843054602143f81c533cebf72aa7",
+													"pin_contract_name": "Burner",
+													"pin_contract_address": "0x9a0766d93b6608b7",
+													"imports": []
+												}
+											]
+										},
+										{
+											"pin": "dedb9ba10e199f6e774b54959f18bb5468221dfb2e749fb708053d0e1b857b15",
+											"pin_self": "2a54d9460bc7fc58eb0b7c11563882d5835ddf614a127746d8d2278fc74adcdf",
+											"pin_contract_name": "FlowToken",
+											"pin_contract_address": "0x7e60df042a9c0868",
+											"imports": [
+												{
+													"pin": "fdf38f744b1cccbff5682a29a51efe62d3a596c40784491629cd2a037eed2ba8",
+													"pin_self": "b230a59e4f9f68ce0c06977a1cb38e7f560a843054602143f81c533cebf72aa7",
+													"pin_contract_name": "Burner",
+													"pin_contract_address": "0x9a0766d93b6608b7",
+													"imports": []
+												},
+												{
+													"pin": "da07e3342de317759cca24b2e4d85a30b01a4e8936effe05656ae21502d9f494",
+													"pin_self": "60cb90ca0c0135f6f9ac74d87c4cb55350da74ed985f804b514754ffe1c04b48",
+													"pin_contract_name": "MetadataViews",
+													"pin_contract_address": "0x631e88ae7f1d7c20",
+													"imports": [
+														{
+															"pin": "fdf38f744b1cccbff5682a29a51efe62d3a596c40784491629cd2a037eed2ba8",
+															"pin_self": "b230a59e4f9f68ce0c06977a1cb38e7f560a843054602143f81c533cebf72aa7",
+															"pin_contract_name": "Burner",
+															"pin_contract_address": "0x9a0766d93b6608b7",
+															"imports": []
+														},
+														{
+															"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+															"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+															"pin_contract_name": "ViewResolver",
+															"pin_contract_address": "0x631e88ae7f1d7c20",
+															"imports": []
+														},
+														{
+															"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+															"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+															"pin_contract_name": "ViewResolver",
+															"pin_contract_address": "0x631e88ae7f1d7c20",
+															"imports": []
+														}
+													]
+												},
+												{
+													"pin": "35eb92cb2e0e83ad91d6238f8bce57f7de3cefdf7c35faf343f3df879a88ba12",
+													"pin_self": "be600421a8b9799c427e7e69fcb5c94fba7f4f00277840f30c5cbb4b08f1f890",
+													"pin_contract_name": "FungibleTokenMetadataViews",
+													"pin_contract_address": "0x9a0766d93b6608b7",
+													"imports": [
+														{
+															"pin": "fdf38f744b1cccbff5682a29a51efe62d3a596c40784491629cd2a037eed2ba8",
+															"pin_self": "b230a59e4f9f68ce0c06977a1cb38e7f560a843054602143f81c533cebf72aa7",
+															"pin_contract_name": "Burner",
+															"pin_contract_address": "0x9a0766d93b6608b7",
+															"imports": []
+														},
+														{
+															"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+															"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+															"pin_contract_name": "ViewResolver",
+															"pin_contract_address": "0x631e88ae7f1d7c20",
+															"imports": []
+														},
+														{
+															"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+															"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+															"pin_contract_name": "ViewResolver",
+															"pin_contract_address": "0x631e88ae7f1d7c20",
+															"imports": []
+														}
+													]
+												}
+											]
+										}
+									]
+								}
 							}
 						]
 					}
@@ -421,7 +428,7 @@
 				"i18n": [
 					{
 						"tag": "en-US",
-						"translation": "Destroy Coa"
+						"translation": "Get Evm Address String"
 					}
 				]
 			}

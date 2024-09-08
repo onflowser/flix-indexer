@@ -1,0 +1,146 @@
+{
+	"f_type": "InteractionTemplate",
+	"f_version": "1.1.0",
+	"id": "949254bb5faa7174ecb11ced1e432105c5ed11ff45bdc2f3b7e797ca2a21cc26",
+	"data": {
+		"type": "script",
+		"interface": "",
+		"cadence": {
+			"body": "import \"NonFungibleToken\"\n\n/// Returns the IDs of all the NFTs in a collection\n///\n/// @param address: The address of the account that owns the collection\n/// @param collectionPathIdentifier: The identifier of the collection's storage path\n///\n/// @returns An array of the UInt64 IDs of all the NFTs in the collection or nil if the account is not configured\n///     with a Collection at the given path\n///\naccess(all) fun main(address: Address, collectionPathIdentifier: String): [UInt64]? {\n    let path = StoragePath(identifier: collectionPathIdentifier) ?? panic(\"Malformed StoragePath identifier\")\n    return getAuthAccount\u003cauth(BorrowValue) \u0026Account\u003e(address).storage.borrow\u003c\u0026{NonFungibleToken.Collection}\u003e(\n            from: path\n        )?.getIDs()\n        ?? nil\n}\n",
+			"network_pins": [
+				{
+					"network": "emulator",
+					"pin_self": "041919f4020225e6c4c3c2d762061c40dbb901592b916a050e0207b0bb19e154"
+				},
+				{
+					"network": "mainnet",
+					"pin_self": "d33aadd059258e95a90d6bee04aa1844f0991c18f725e70c0738533634cefd20"
+				},
+				{
+					"network": "testnet",
+					"pin_self": "d65a72971f67bba449bf9546a12de75aa1a5cc461cf670fd3f02b9e50a662f0b"
+				}
+			]
+		},
+		"parameters": [
+			{
+				"label": "address",
+				"index": 0,
+				"type": "Address",
+				"messages": []
+			},
+			{
+				"label": "collectionPathIdentifier",
+				"index": 1,
+				"type": "String",
+				"messages": []
+			}
+		],
+		"dependencies": [
+			{
+				"contracts": [
+					{
+						"contract": "NonFungibleToken",
+						"networks": [
+							{
+								"network": "testnet",
+								"address": "0x631e88ae7f1d7c20",
+								"dependency_pin_block_height": 215464990,
+								"dependency_pin": {
+									"pin": "b12511cf8bc6237d06580340c0118c624dc4f4f0faee8d073417c9b1e09ae65f",
+									"pin_self": "8396ebca01cd8d9ada9cd04f8a50dd85c2725fbb893d5a6a35ac9598237b725f",
+									"pin_contract_name": "NonFungibleToken",
+									"pin_contract_address": "0x631e88ae7f1d7c20",
+									"imports": [
+										{
+											"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+											"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+											"pin_contract_name": "ViewResolver",
+											"pin_contract_address": "0x631e88ae7f1d7c20",
+											"imports": []
+										}
+									]
+								}
+							},
+							{
+								"network": "emulator",
+								"address": "0xf8d6e0586b0a20c7",
+								"dependency_pin_block_height": 0,
+								"dependency_pin": {
+									"pin": "3752b59a6712df109692d94b27de7e3b4f9c5ed70b1ea189b150d3ee219a5ac6",
+									"pin_self": "1cc75b367e4e7d8206c2fb6bbbd2a927d888a6926c2bac70f81d1926634e8817",
+									"pin_contract_name": "NonFungibleToken",
+									"pin_contract_address": "0xf8d6e0586b0a20c7",
+									"imports": [
+										{
+											"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+											"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+											"pin_contract_name": "ViewResolver",
+											"pin_contract_address": "0xf8d6e0586b0a20c7",
+											"imports": []
+										}
+									]
+								}
+							},
+							{
+								"network": "mainnet",
+								"address": "0x1d7e57aa55817448",
+								"dependency_pin_block_height": 86397127,
+								"dependency_pin": {
+									"pin": "ab297380ce176ffbd8976e7805ebf180dcd8a65933c5607680941d565ff2ecf1",
+									"pin_self": "e087a979d2220b9ff33a82751416bb9d2f9051a1aa2cc7383c00f37073c44006",
+									"pin_contract_name": "NonFungibleToken",
+									"pin_contract_address": "0x1d7e57aa55817448",
+									"imports": [
+										{
+											"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+											"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+											"pin_contract_name": "ViewResolver",
+											"pin_contract_address": "0x1d7e57aa55817448",
+											"imports": []
+										}
+									]
+								}
+							},
+							{
+								"network": "testing",
+								"address": "0000000000000001",
+								"dependency_pin_block_height": 0,
+								"dependency_pin": {
+									"pin": "",
+									"pin_self": "",
+									"pin_contract_name": "",
+									"pin_contract_address": "",
+									"imports": null
+								}
+							},
+							{
+								"network": "previewnet",
+								"address": "b6763b4399a888c8",
+								"dependency_pin_block_height": 0,
+								"dependency_pin": {
+									"pin": "",
+									"pin_self": "",
+									"pin_contract_name": "",
+									"pin_contract_address": "",
+									"imports": null
+								}
+							}
+						]
+					}
+				]
+			}
+		],
+		"messages": [
+			{
+				"key": "title",
+				"i18n": [
+					{
+						"tag": "en-US",
+						"translation": "Get Ids"
+					}
+				]
+			}
+		]
+	}
+}

@@ -1,0 +1,959 @@
+{
+	"f_type": "InteractionTemplate",
+	"f_version": "1.1.0",
+	"id": "e390943ca88d1c12a2b0549ff4cad2740908051a99de67be314bba6ce532af24",
+	"data": {
+		"type": "script",
+		"interface": "",
+		"cadence": {
+			"body": "import \"FungibleToken\"\nimport \"FlowToken\"\nimport \"MetadataViews\"\nimport \"FungibleTokenMetadataViews\"\n\n/// Custom struct to store Fungible Token vault info\naccess(all)\nstruct FTVaultInfo {\n    /// The name of the Fungible Token\n    access(all) let name: String\n    /// The symbol of the Fungible Token\n    access(all) let symbol: String\n    /// The balance of the Fungible Token\n    access(all) var balance: UFix64\n    /// The address of the Fungible Token contract\n    access(all) let tokenContractAddress: Address\n    /// The name of the Fungible Token contract\n    access(all) let tokenContractName: String\n    /// The storage path of the Fungible Token vault\n    access(all) let storagePath: StoragePath\n    /// The receiver path of the Fungible Token vault\n    access(all) let receiverPath: PublicPath\n\n    init(\n        name: String,\n        symbol: String,\n        balance: UFix64,\n        tokenContractAddress: Address,\n        tokenContractName: String,\n        storagePath: StoragePath,\n        receiverPath: PublicPath\n    ) {\n        self.name = name\n        self.symbol = symbol\n        self.balance = balance\n        self.tokenContractAddress = tokenContractAddress\n        self.tokenContractName = tokenContractName\n        self.storagePath = storagePath\n        self.receiverPath = receiverPath\n    }\n\n    /// Updates the balance of the Fungible Token vault\n    access(all) fun updateBalance(delta: UFix64) {\n        self.balance = self.balance + delta\n    }\n}\n\n/// Returns a FTVaultInfo struct with the provided data\n///\n/// @param vaultType: The type of the Fungible Token vault\n/// @param balance: The balance of the Fungible Token vault\n/// @param display: The FTDisplay view of the Fungible Token vault\n/// @param data: The FTVaultData view of the Fungible Token vault\n///\n/// @return FTVaultInfo: The FTVaultInfo struct with the provided data\n///\naccess(all)\nfun getVaultInfo(\n    vaultType: Type,\n    balance: UFix64,\n    display: FungibleTokenMetadataViews.FTDisplay,\n    data: FungibleTokenMetadataViews.FTVaultData\n): FTVaultInfo {\n    let identifier = vaultType.identifier\n    let addrString = \"0x\".concat(identifier.split(separator: \".\")[1])\n    let contractAddress = Address.fromString(addrString) ?? panic(\"INVALID ADDRESS: \".concat(addrString))\n    let contractName = identifier.split(separator: \".\")[2]\n\n    return FTVaultInfo(\n        name: display.name,\n        symbol: display.symbol,\n        balance: balance,\n        tokenContractAddress: contractAddress,\n        tokenContractName: contractName,\n        storagePath: data.storagePath,\n        receiverPath: data.receiverPath\n    )\n}\n\n/// Returns a mapping of all Fungible Token vaults stored in the account's storage indexed by their type\n///\n/// @param address: The address of the account to query\n///\n/// @return {Type: FTVaultInfo}: A mapping of vault types to their respective info\naccess(all)\nfun main(address: Address): {Type: FTVaultInfo} {\n    let acct = getAuthAccount\u003cauth(BorrowValue) \u0026Account\u003e(address)\n    let res: {Type: FTVaultInfo} = {}\n\n    // Define target types\n    let ftVaultType = Type\u003c@{FungibleToken.Vault}\u003e()\n    let displayType = Type\u003cFungibleTokenMetadataViews.FTDisplay\u003e()\n    let dataType = Type\u003cFungibleTokenMetadataViews.FTVaultData\u003e()\n\n    acct.storage.forEachStored(fun (path: StoragePath, type: Type): Bool {\n        if type.isSubtype(of: ftVaultType) {\n            // Reference the Vault at the current storage path\n            let vault = acct.storage.borrow\u003c\u0026{FungibleToken.Vault}\u003e(from: path)\n                ?? panic(\"Problem borrowing vault from path: \".concat(path.toString()))\n            // Get the balance\n            var balance = vault.balance\n            // Update the balance if the Vault type has already been encountered \u0026 return early\n            if let info = res[type] {\n                info.updateBalance(delta: balance)\n                return true\n            }\n\n            // Resolve FT metadata views\n            let display = vault.resolveView(displayType) as! FungibleTokenMetadataViews.FTDisplay?\n            let data = vault.resolveView(dataType) as! FungibleTokenMetadataViews.FTVaultData?\n            // Continue if metadata views are not resolved - no relevant info to capture\n            if display == nil || data == nil {\n                return true\n            }\n            // Capture the relevant info and insert to our result mapping\n            let info = getVaultInfo(vaultType: type, balance: balance, display: display!, data: data!)\n            res.insert(key: type, info)\n        }\n        return true\n    })\n    return res\n}",
+			"network_pins": [
+				{
+					"network": "emulator",
+					"pin_self": "5d73c04c5fac17f5b93f02a56d5499db3f6a93f02b216381f9f44c2d71e36e5c"
+				},
+				{
+					"network": "mainnet",
+					"pin_self": "5fbe29b124428479f0c2b29ababdcc0818cc2983f374e63c6a0fbb3466930caa"
+				},
+				{
+					"network": "testnet",
+					"pin_self": "d22291443872f3b4f44670649af12f8005301b601d4ac86eb66f58b07b3e9e95"
+				}
+			]
+		},
+		"parameters": [
+			{
+				"label": "address",
+				"index": 0,
+				"type": "Address",
+				"messages": []
+			}
+		],
+		"dependencies": [
+			{
+				"contracts": [
+					{
+						"contract": "FungibleToken",
+						"networks": [
+							{
+								"network": "testnet",
+								"address": "0x9a0766d93b6608b7",
+								"dependency_pin_block_height": 215465042,
+								"dependency_pin": {
+									"pin": "1dcfe88a8f608a664b492e23dfdfdcc0f8d13f5261c918801f196f111584a9ef",
+									"pin_self": "1e23db980500f7f0b3112dbec14ee03079525c3e490532981e333607a0d72648",
+									"pin_contract_name": "FungibleToken",
+									"pin_contract_address": "0x9a0766d93b6608b7",
+									"imports": [
+										{
+											"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+											"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+											"pin_contract_name": "ViewResolver",
+											"pin_contract_address": "0x631e88ae7f1d7c20",
+											"imports": []
+										},
+										{
+											"pin": "fdf38f744b1cccbff5682a29a51efe62d3a596c40784491629cd2a037eed2ba8",
+											"pin_self": "b230a59e4f9f68ce0c06977a1cb38e7f560a843054602143f81c533cebf72aa7",
+											"pin_contract_name": "Burner",
+											"pin_contract_address": "0x9a0766d93b6608b7",
+											"imports": []
+										}
+									]
+								}
+							},
+							{
+								"network": "emulator",
+								"address": "0xee82856bf20e2aa6",
+								"dependency_pin_block_height": 0,
+								"dependency_pin": {
+									"pin": "e9e7b397cf525d4d4dbdd91c7c2ac6c3cb2575ec8ee6459a06aa3429254d2eb2",
+									"pin_self": "d23879b5abd0070ddfec85fdde50398c6617d2f5b35a2eeb1f873c6f0658204f",
+									"pin_contract_name": "FungibleToken",
+									"pin_contract_address": "0xee82856bf20e2aa6",
+									"imports": [
+										{
+											"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+											"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+											"pin_contract_name": "ViewResolver",
+											"pin_contract_address": "0xf8d6e0586b0a20c7",
+											"imports": []
+										},
+										{
+											"pin": "fdf38f744b1cccbff5682a29a51efe62d3a596c40784491629cd2a037eed2ba8",
+											"pin_self": "b230a59e4f9f68ce0c06977a1cb38e7f560a843054602143f81c533cebf72aa7",
+											"pin_contract_name": "Burner",
+											"pin_contract_address": "0xf8d6e0586b0a20c7",
+											"imports": []
+										}
+									]
+								}
+							},
+							{
+								"network": "mainnet",
+								"address": "0xf233dcee88fe0abe",
+								"dependency_pin_block_height": 86397165,
+								"dependency_pin": {
+									"pin": "2ebe6fb33e21006b9bc37275534d199a3768639c0cd531a233d81576dfcb2602",
+									"pin_self": "b913af1e763599b37d54e6e439dd4b435b61c9c1d9fee3628427099f05d4d3f0",
+									"pin_contract_name": "FungibleToken",
+									"pin_contract_address": "0xf233dcee88fe0abe",
+									"imports": [
+										{
+											"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+											"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+											"pin_contract_name": "ViewResolver",
+											"pin_contract_address": "0x1d7e57aa55817448",
+											"imports": []
+										},
+										{
+											"pin": "fdf38f744b1cccbff5682a29a51efe62d3a596c40784491629cd2a037eed2ba8",
+											"pin_self": "b230a59e4f9f68ce0c06977a1cb38e7f560a843054602143f81c533cebf72aa7",
+											"pin_contract_name": "Burner",
+											"pin_contract_address": "0xf233dcee88fe0abe",
+											"imports": []
+										}
+									]
+								}
+							},
+							{
+								"network": "previewnet",
+								"address": "a0225e7000ac82a9",
+								"dependency_pin_block_height": 0,
+								"dependency_pin": {
+									"pin": "",
+									"pin_self": "",
+									"pin_contract_name": "",
+									"pin_contract_address": "",
+									"imports": null
+								}
+							},
+							{
+								"network": "testing",
+								"address": "0000000000000002",
+								"dependency_pin_block_height": 0,
+								"dependency_pin": {
+									"pin": "",
+									"pin_self": "",
+									"pin_contract_name": "",
+									"pin_contract_address": "",
+									"imports": null
+								}
+							}
+						]
+					}
+				]
+			},
+			{
+				"contracts": [
+					{
+						"contract": "FlowToken",
+						"networks": [
+							{
+								"network": "mainnet",
+								"address": "0x1654653399040a61",
+								"dependency_pin_block_height": 86397165,
+								"dependency_pin": {
+									"pin": "61222946f39e683eaa63f20be18006b63a0e52ba7988da175560aebb00921aec",
+									"pin_self": "f65b02ca28848f2de264cfe77ffe25e0c331a7604072d001bb72aeabcbbc2114",
+									"pin_contract_name": "FlowToken",
+									"pin_contract_address": "0x1654653399040a61",
+									"imports": [
+										{
+											"pin": "2ebe6fb33e21006b9bc37275534d199a3768639c0cd531a233d81576dfcb2602",
+											"pin_self": "b913af1e763599b37d54e6e439dd4b435b61c9c1d9fee3628427099f05d4d3f0",
+											"pin_contract_name": "FungibleToken",
+											"pin_contract_address": "0xf233dcee88fe0abe",
+											"imports": [
+												{
+													"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+													"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+													"pin_contract_name": "ViewResolver",
+													"pin_contract_address": "0x1d7e57aa55817448",
+													"imports": []
+												},
+												{
+													"pin": "fdf38f744b1cccbff5682a29a51efe62d3a596c40784491629cd2a037eed2ba8",
+													"pin_self": "b230a59e4f9f68ce0c06977a1cb38e7f560a843054602143f81c533cebf72aa7",
+													"pin_contract_name": "Burner",
+													"pin_contract_address": "0xf233dcee88fe0abe",
+													"imports": []
+												}
+											]
+										},
+										{
+											"pin": "4ae712052ae85739e40233d4061edd3bcc545878e29948f942f609647fa32755",
+											"pin_self": "856ef3bb1b374cda7cfc0731f9976fa69fccdc41e15b8d94cbdb72bc09628272",
+											"pin_contract_name": "MetadataViews",
+											"pin_contract_address": "0x1d7e57aa55817448",
+											"imports": [
+												{
+													"pin": "fdf38f744b1cccbff5682a29a51efe62d3a596c40784491629cd2a037eed2ba8",
+													"pin_self": "b230a59e4f9f68ce0c06977a1cb38e7f560a843054602143f81c533cebf72aa7",
+													"pin_contract_name": "Burner",
+													"pin_contract_address": "0xf233dcee88fe0abe",
+													"imports": []
+												},
+												{
+													"pin": "ab297380ce176ffbd8976e7805ebf180dcd8a65933c5607680941d565ff2ecf1",
+													"pin_self": "e087a979d2220b9ff33a82751416bb9d2f9051a1aa2cc7383c00f37073c44006",
+													"pin_contract_name": "NonFungibleToken",
+													"pin_contract_address": "0x1d7e57aa55817448",
+													"imports": [
+														{
+															"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+															"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+															"pin_contract_name": "ViewResolver",
+															"pin_contract_address": "0x1d7e57aa55817448",
+															"imports": []
+														}
+													]
+												},
+												{
+													"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+													"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+													"pin_contract_name": "ViewResolver",
+													"pin_contract_address": "0x1d7e57aa55817448",
+													"imports": []
+												}
+											]
+										},
+										{
+											"pin": "de4db3d9f9fdb68c0f52bb1f49e7b220db69936fe0685102bcb3d064b691d084",
+											"pin_self": "4a9aa241d030ddc954f792b53f1a8a3ce61d0558f0cd4a139511b980561b6cce",
+											"pin_contract_name": "FungibleTokenMetadataViews",
+											"pin_contract_address": "0xf233dcee88fe0abe",
+											"imports": [
+												{
+													"pin": "fdf38f744b1cccbff5682a29a51efe62d3a596c40784491629cd2a037eed2ba8",
+													"pin_self": "b230a59e4f9f68ce0c06977a1cb38e7f560a843054602143f81c533cebf72aa7",
+													"pin_contract_name": "Burner",
+													"pin_contract_address": "0xf233dcee88fe0abe",
+													"imports": []
+												},
+												{
+													"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+													"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+													"pin_contract_name": "ViewResolver",
+													"pin_contract_address": "0x1d7e57aa55817448",
+													"imports": []
+												},
+												{
+													"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+													"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+													"pin_contract_name": "ViewResolver",
+													"pin_contract_address": "0x1d7e57aa55817448",
+													"imports": []
+												}
+											]
+										}
+									]
+								}
+							},
+							{
+								"network": "testnet",
+								"address": "0x7e60df042a9c0868",
+								"dependency_pin_block_height": 215465053,
+								"dependency_pin": {
+									"pin": "e4321c8e05b5d834dc99020f71bd06599b9dbd3790f138c851aefb673438c442",
+									"pin_self": "2a54d9460bc7fc58eb0b7c11563882d5835ddf614a127746d8d2278fc74adcdf",
+									"pin_contract_name": "FlowToken",
+									"pin_contract_address": "0x7e60df042a9c0868",
+									"imports": [
+										{
+											"pin": "1dcfe88a8f608a664b492e23dfdfdcc0f8d13f5261c918801f196f111584a9ef",
+											"pin_self": "1e23db980500f7f0b3112dbec14ee03079525c3e490532981e333607a0d72648",
+											"pin_contract_name": "FungibleToken",
+											"pin_contract_address": "0x9a0766d93b6608b7",
+											"imports": [
+												{
+													"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+													"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+													"pin_contract_name": "ViewResolver",
+													"pin_contract_address": "0x631e88ae7f1d7c20",
+													"imports": []
+												},
+												{
+													"pin": "fdf38f744b1cccbff5682a29a51efe62d3a596c40784491629cd2a037eed2ba8",
+													"pin_self": "b230a59e4f9f68ce0c06977a1cb38e7f560a843054602143f81c533cebf72aa7",
+													"pin_contract_name": "Burner",
+													"pin_contract_address": "0x9a0766d93b6608b7",
+													"imports": []
+												}
+											]
+										},
+										{
+											"pin": "5c8c4a0fb2c0265d6be8be438d53f2f890302c0a60168b9ea92dc1cc8e1c1c69",
+											"pin_self": "60cb90ca0c0135f6f9ac74d87c4cb55350da74ed985f804b514754ffe1c04b48",
+											"pin_contract_name": "MetadataViews",
+											"pin_contract_address": "0x631e88ae7f1d7c20",
+											"imports": [
+												{
+													"pin": "fdf38f744b1cccbff5682a29a51efe62d3a596c40784491629cd2a037eed2ba8",
+													"pin_self": "b230a59e4f9f68ce0c06977a1cb38e7f560a843054602143f81c533cebf72aa7",
+													"pin_contract_name": "Burner",
+													"pin_contract_address": "0x9a0766d93b6608b7",
+													"imports": []
+												},
+												{
+													"pin": "b12511cf8bc6237d06580340c0118c624dc4f4f0faee8d073417c9b1e09ae65f",
+													"pin_self": "8396ebca01cd8d9ada9cd04f8a50dd85c2725fbb893d5a6a35ac9598237b725f",
+													"pin_contract_name": "NonFungibleToken",
+													"pin_contract_address": "0x631e88ae7f1d7c20",
+													"imports": [
+														{
+															"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+															"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+															"pin_contract_name": "ViewResolver",
+															"pin_contract_address": "0x631e88ae7f1d7c20",
+															"imports": []
+														}
+													]
+												},
+												{
+													"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+													"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+													"pin_contract_name": "ViewResolver",
+													"pin_contract_address": "0x631e88ae7f1d7c20",
+													"imports": []
+												}
+											]
+										},
+										{
+											"pin": "35eb92cb2e0e83ad91d6238f8bce57f7de3cefdf7c35faf343f3df879a88ba12",
+											"pin_self": "be600421a8b9799c427e7e69fcb5c94fba7f4f00277840f30c5cbb4b08f1f890",
+											"pin_contract_name": "FungibleTokenMetadataViews",
+											"pin_contract_address": "0x9a0766d93b6608b7",
+											"imports": [
+												{
+													"pin": "fdf38f744b1cccbff5682a29a51efe62d3a596c40784491629cd2a037eed2ba8",
+													"pin_self": "b230a59e4f9f68ce0c06977a1cb38e7f560a843054602143f81c533cebf72aa7",
+													"pin_contract_name": "Burner",
+													"pin_contract_address": "0x9a0766d93b6608b7",
+													"imports": []
+												},
+												{
+													"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+													"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+													"pin_contract_name": "ViewResolver",
+													"pin_contract_address": "0x631e88ae7f1d7c20",
+													"imports": []
+												},
+												{
+													"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+													"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+													"pin_contract_name": "ViewResolver",
+													"pin_contract_address": "0x631e88ae7f1d7c20",
+													"imports": []
+												}
+											]
+										}
+									]
+								}
+							},
+							{
+								"network": "emulator",
+								"address": "0x0ae53cb6e3f42a79",
+								"dependency_pin_block_height": 0,
+								"dependency_pin": {
+									"pin": "adbcb9800e689866804345b0fb1cc334a0f7d621ee70ad114fb47fd0d295e0ed",
+									"pin_self": "01dba4dda4978e0bbbadd28fcaf0457da90c37e9f498ef88bf425f3550c16a14",
+									"pin_contract_name": "FlowToken",
+									"pin_contract_address": "0x0ae53cb6e3f42a79",
+									"imports": [
+										{
+											"pin": "e9e7b397cf525d4d4dbdd91c7c2ac6c3cb2575ec8ee6459a06aa3429254d2eb2",
+											"pin_self": "d23879b5abd0070ddfec85fdde50398c6617d2f5b35a2eeb1f873c6f0658204f",
+											"pin_contract_name": "FungibleToken",
+											"pin_contract_address": "0xee82856bf20e2aa6",
+											"imports": [
+												{
+													"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+													"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+													"pin_contract_name": "ViewResolver",
+													"pin_contract_address": "0xf8d6e0586b0a20c7",
+													"imports": []
+												},
+												{
+													"pin": "fdf38f744b1cccbff5682a29a51efe62d3a596c40784491629cd2a037eed2ba8",
+													"pin_self": "b230a59e4f9f68ce0c06977a1cb38e7f560a843054602143f81c533cebf72aa7",
+													"pin_contract_name": "Burner",
+													"pin_contract_address": "0xf8d6e0586b0a20c7",
+													"imports": []
+												}
+											]
+										},
+										{
+											"pin": "551deae624e302ccae2923b7d76ff648743eb4675a273a808f7c812bc531d86b",
+											"pin_self": "9238a5bc9b8e5e2b0536f59699ebc335995c39dcd66bc6a1c6eff22acba50494",
+											"pin_contract_name": "MetadataViews",
+											"pin_contract_address": "0xf8d6e0586b0a20c7",
+											"imports": [
+												{
+													"pin": "fdf38f744b1cccbff5682a29a51efe62d3a596c40784491629cd2a037eed2ba8",
+													"pin_self": "b230a59e4f9f68ce0c06977a1cb38e7f560a843054602143f81c533cebf72aa7",
+													"pin_contract_name": "Burner",
+													"pin_contract_address": "0xf8d6e0586b0a20c7",
+													"imports": []
+												},
+												{
+													"pin": "3752b59a6712df109692d94b27de7e3b4f9c5ed70b1ea189b150d3ee219a5ac6",
+													"pin_self": "1cc75b367e4e7d8206c2fb6bbbd2a927d888a6926c2bac70f81d1926634e8817",
+													"pin_contract_name": "NonFungibleToken",
+													"pin_contract_address": "0xf8d6e0586b0a20c7",
+													"imports": [
+														{
+															"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+															"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+															"pin_contract_name": "ViewResolver",
+															"pin_contract_address": "0xf8d6e0586b0a20c7",
+															"imports": []
+														}
+													]
+												},
+												{
+													"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+													"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+													"pin_contract_name": "ViewResolver",
+													"pin_contract_address": "0xf8d6e0586b0a20c7",
+													"imports": []
+												}
+											]
+										},
+										{
+											"pin": "a773720a78f872a86a56d57ae56f55895db7910fda007b5d2e35c3ba8e4e24c7",
+											"pin_self": "83e26c97bad801bb15575ed6d8523931038a128f8a04f99ec30c69607a3ba796",
+											"pin_contract_name": "FungibleTokenMetadataViews",
+											"pin_contract_address": "0xee82856bf20e2aa6",
+											"imports": [
+												{
+													"pin": "fdf38f744b1cccbff5682a29a51efe62d3a596c40784491629cd2a037eed2ba8",
+													"pin_self": "b230a59e4f9f68ce0c06977a1cb38e7f560a843054602143f81c533cebf72aa7",
+													"pin_contract_name": "Burner",
+													"pin_contract_address": "0xf8d6e0586b0a20c7",
+													"imports": []
+												},
+												{
+													"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+													"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+													"pin_contract_name": "ViewResolver",
+													"pin_contract_address": "0xf8d6e0586b0a20c7",
+													"imports": []
+												},
+												{
+													"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+													"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+													"pin_contract_name": "ViewResolver",
+													"pin_contract_address": "0xf8d6e0586b0a20c7",
+													"imports": []
+												}
+											]
+										}
+									]
+								}
+							},
+							{
+								"network": "previewnet",
+								"address": "4445e7ad11568276",
+								"dependency_pin_block_height": 0,
+								"dependency_pin": {
+									"pin": "",
+									"pin_self": "",
+									"pin_contract_name": "",
+									"pin_contract_address": "",
+									"imports": null
+								}
+							}
+						]
+					}
+				]
+			},
+			{
+				"contracts": [
+					{
+						"contract": "MetadataViews",
+						"networks": [
+							{
+								"network": "mainnet",
+								"address": "0x1d7e57aa55817448",
+								"dependency_pin_block_height": 86397170,
+								"dependency_pin": {
+									"pin": "b599e3674f87f4441871ed72e1e4341651790b60e05d4dcffff7105be7705887",
+									"pin_self": "856ef3bb1b374cda7cfc0731f9976fa69fccdc41e15b8d94cbdb72bc09628272",
+									"pin_contract_name": "MetadataViews",
+									"pin_contract_address": "0x1d7e57aa55817448",
+									"imports": [
+										{
+											"pin": "2ebe6fb33e21006b9bc37275534d199a3768639c0cd531a233d81576dfcb2602",
+											"pin_self": "b913af1e763599b37d54e6e439dd4b435b61c9c1d9fee3628427099f05d4d3f0",
+											"pin_contract_name": "FungibleToken",
+											"pin_contract_address": "0xf233dcee88fe0abe",
+											"imports": [
+												{
+													"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+													"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+													"pin_contract_name": "ViewResolver",
+													"pin_contract_address": "0x1d7e57aa55817448",
+													"imports": []
+												},
+												{
+													"pin": "fdf38f744b1cccbff5682a29a51efe62d3a596c40784491629cd2a037eed2ba8",
+													"pin_self": "b230a59e4f9f68ce0c06977a1cb38e7f560a843054602143f81c533cebf72aa7",
+													"pin_contract_name": "Burner",
+													"pin_contract_address": "0xf233dcee88fe0abe",
+													"imports": []
+												}
+											]
+										},
+										{
+											"pin": "ab297380ce176ffbd8976e7805ebf180dcd8a65933c5607680941d565ff2ecf1",
+											"pin_self": "e087a979d2220b9ff33a82751416bb9d2f9051a1aa2cc7383c00f37073c44006",
+											"pin_contract_name": "NonFungibleToken",
+											"pin_contract_address": "0x1d7e57aa55817448",
+											"imports": [
+												{
+													"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+													"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+													"pin_contract_name": "ViewResolver",
+													"pin_contract_address": "0x1d7e57aa55817448",
+													"imports": []
+												}
+											]
+										},
+										{
+											"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+											"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+											"pin_contract_name": "ViewResolver",
+											"pin_contract_address": "0x1d7e57aa55817448",
+											"imports": []
+										}
+									]
+								}
+							},
+							{
+								"network": "testnet",
+								"address": "0x631e88ae7f1d7c20",
+								"dependency_pin_block_height": 215465062,
+								"dependency_pin": {
+									"pin": "04296e5deab6a7f828ed616d28fc3c72d879bf4b95a34d89702ab19e87542957",
+									"pin_self": "60cb90ca0c0135f6f9ac74d87c4cb55350da74ed985f804b514754ffe1c04b48",
+									"pin_contract_name": "MetadataViews",
+									"pin_contract_address": "0x631e88ae7f1d7c20",
+									"imports": [
+										{
+											"pin": "1dcfe88a8f608a664b492e23dfdfdcc0f8d13f5261c918801f196f111584a9ef",
+											"pin_self": "1e23db980500f7f0b3112dbec14ee03079525c3e490532981e333607a0d72648",
+											"pin_contract_name": "FungibleToken",
+											"pin_contract_address": "0x9a0766d93b6608b7",
+											"imports": [
+												{
+													"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+													"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+													"pin_contract_name": "ViewResolver",
+													"pin_contract_address": "0x631e88ae7f1d7c20",
+													"imports": []
+												},
+												{
+													"pin": "fdf38f744b1cccbff5682a29a51efe62d3a596c40784491629cd2a037eed2ba8",
+													"pin_self": "b230a59e4f9f68ce0c06977a1cb38e7f560a843054602143f81c533cebf72aa7",
+													"pin_contract_name": "Burner",
+													"pin_contract_address": "0x9a0766d93b6608b7",
+													"imports": []
+												}
+											]
+										},
+										{
+											"pin": "b12511cf8bc6237d06580340c0118c624dc4f4f0faee8d073417c9b1e09ae65f",
+											"pin_self": "8396ebca01cd8d9ada9cd04f8a50dd85c2725fbb893d5a6a35ac9598237b725f",
+											"pin_contract_name": "NonFungibleToken",
+											"pin_contract_address": "0x631e88ae7f1d7c20",
+											"imports": [
+												{
+													"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+													"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+													"pin_contract_name": "ViewResolver",
+													"pin_contract_address": "0x631e88ae7f1d7c20",
+													"imports": []
+												}
+											]
+										},
+										{
+											"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+											"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+											"pin_contract_name": "ViewResolver",
+											"pin_contract_address": "0x631e88ae7f1d7c20",
+											"imports": []
+										}
+									]
+								}
+							},
+							{
+								"network": "emulator",
+								"address": "0xf8d6e0586b0a20c7",
+								"dependency_pin_block_height": 0,
+								"dependency_pin": {
+									"pin": "0f01d860070e89242aa4a9adddbe9a75cecdaada7c9a429063c241f24f0aefb8",
+									"pin_self": "9238a5bc9b8e5e2b0536f59699ebc335995c39dcd66bc6a1c6eff22acba50494",
+									"pin_contract_name": "MetadataViews",
+									"pin_contract_address": "0xf8d6e0586b0a20c7",
+									"imports": [
+										{
+											"pin": "e9e7b397cf525d4d4dbdd91c7c2ac6c3cb2575ec8ee6459a06aa3429254d2eb2",
+											"pin_self": "d23879b5abd0070ddfec85fdde50398c6617d2f5b35a2eeb1f873c6f0658204f",
+											"pin_contract_name": "FungibleToken",
+											"pin_contract_address": "0xee82856bf20e2aa6",
+											"imports": [
+												{
+													"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+													"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+													"pin_contract_name": "ViewResolver",
+													"pin_contract_address": "0xf8d6e0586b0a20c7",
+													"imports": []
+												},
+												{
+													"pin": "fdf38f744b1cccbff5682a29a51efe62d3a596c40784491629cd2a037eed2ba8",
+													"pin_self": "b230a59e4f9f68ce0c06977a1cb38e7f560a843054602143f81c533cebf72aa7",
+													"pin_contract_name": "Burner",
+													"pin_contract_address": "0xf8d6e0586b0a20c7",
+													"imports": []
+												}
+											]
+										},
+										{
+											"pin": "3752b59a6712df109692d94b27de7e3b4f9c5ed70b1ea189b150d3ee219a5ac6",
+											"pin_self": "1cc75b367e4e7d8206c2fb6bbbd2a927d888a6926c2bac70f81d1926634e8817",
+											"pin_contract_name": "NonFungibleToken",
+											"pin_contract_address": "0xf8d6e0586b0a20c7",
+											"imports": [
+												{
+													"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+													"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+													"pin_contract_name": "ViewResolver",
+													"pin_contract_address": "0xf8d6e0586b0a20c7",
+													"imports": []
+												}
+											]
+										},
+										{
+											"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+											"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+											"pin_contract_name": "ViewResolver",
+											"pin_contract_address": "0xf8d6e0586b0a20c7",
+											"imports": []
+										}
+									]
+								}
+							},
+							{
+								"network": "previewnet",
+								"address": "b6763b4399a888c8",
+								"dependency_pin_block_height": 0,
+								"dependency_pin": {
+									"pin": "",
+									"pin_self": "",
+									"pin_contract_name": "",
+									"pin_contract_address": "",
+									"imports": null
+								}
+							},
+							{
+								"network": "testing",
+								"address": "0000000000000001",
+								"dependency_pin_block_height": 0,
+								"dependency_pin": {
+									"pin": "",
+									"pin_self": "",
+									"pin_contract_name": "",
+									"pin_contract_address": "",
+									"imports": null
+								}
+							}
+						]
+					}
+				]
+			},
+			{
+				"contracts": [
+					{
+						"contract": "FungibleTokenMetadataViews",
+						"networks": [
+							{
+								"network": "emulator",
+								"address": "ee82856bf20e2aa6",
+								"dependency_pin_block_height": 0,
+								"dependency_pin": {
+									"pin": "72c772ed14ad7481f64b6a6b62ebdbcbbee931159c3dfa88ddd7548791c43442",
+									"pin_self": "83e26c97bad801bb15575ed6d8523931038a128f8a04f99ec30c69607a3ba796",
+									"pin_contract_name": "FungibleTokenMetadataViews",
+									"pin_contract_address": "0xee82856bf20e2aa6",
+									"imports": [
+										{
+											"pin": "e9e7b397cf525d4d4dbdd91c7c2ac6c3cb2575ec8ee6459a06aa3429254d2eb2",
+											"pin_self": "d23879b5abd0070ddfec85fdde50398c6617d2f5b35a2eeb1f873c6f0658204f",
+											"pin_contract_name": "FungibleToken",
+											"pin_contract_address": "0xee82856bf20e2aa6",
+											"imports": [
+												{
+													"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+													"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+													"pin_contract_name": "ViewResolver",
+													"pin_contract_address": "0xf8d6e0586b0a20c7",
+													"imports": []
+												},
+												{
+													"pin": "fdf38f744b1cccbff5682a29a51efe62d3a596c40784491629cd2a037eed2ba8",
+													"pin_self": "b230a59e4f9f68ce0c06977a1cb38e7f560a843054602143f81c533cebf72aa7",
+													"pin_contract_name": "Burner",
+													"pin_contract_address": "0xf8d6e0586b0a20c7",
+													"imports": []
+												}
+											]
+										},
+										{
+											"pin": "551deae624e302ccae2923b7d76ff648743eb4675a273a808f7c812bc531d86b",
+											"pin_self": "9238a5bc9b8e5e2b0536f59699ebc335995c39dcd66bc6a1c6eff22acba50494",
+											"pin_contract_name": "MetadataViews",
+											"pin_contract_address": "0xf8d6e0586b0a20c7",
+											"imports": [
+												{
+													"pin": "fdf38f744b1cccbff5682a29a51efe62d3a596c40784491629cd2a037eed2ba8",
+													"pin_self": "b230a59e4f9f68ce0c06977a1cb38e7f560a843054602143f81c533cebf72aa7",
+													"pin_contract_name": "Burner",
+													"pin_contract_address": "0xf8d6e0586b0a20c7",
+													"imports": []
+												},
+												{
+													"pin": "3752b59a6712df109692d94b27de7e3b4f9c5ed70b1ea189b150d3ee219a5ac6",
+													"pin_self": "1cc75b367e4e7d8206c2fb6bbbd2a927d888a6926c2bac70f81d1926634e8817",
+													"pin_contract_name": "NonFungibleToken",
+													"pin_contract_address": "0xf8d6e0586b0a20c7",
+													"imports": [
+														{
+															"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+															"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+															"pin_contract_name": "ViewResolver",
+															"pin_contract_address": "0xf8d6e0586b0a20c7",
+															"imports": []
+														}
+													]
+												},
+												{
+													"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+													"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+													"pin_contract_name": "ViewResolver",
+													"pin_contract_address": "0xf8d6e0586b0a20c7",
+													"imports": []
+												}
+											]
+										},
+										{
+											"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+											"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+											"pin_contract_name": "ViewResolver",
+											"pin_contract_address": "0xf8d6e0586b0a20c7",
+											"imports": []
+										}
+									]
+								}
+							},
+							{
+								"network": "mainnet",
+								"address": "f233dcee88fe0abe",
+								"dependency_pin_block_height": 86397170,
+								"dependency_pin": {
+									"pin": "6eecbe7de07fd4f527b464f2e8e806aaab6e5bbf7cae2fd9681d62a18d057a41",
+									"pin_self": "4a9aa241d030ddc954f792b53f1a8a3ce61d0558f0cd4a139511b980561b6cce",
+									"pin_contract_name": "FungibleTokenMetadataViews",
+									"pin_contract_address": "0xf233dcee88fe0abe",
+									"imports": [
+										{
+											"pin": "2ebe6fb33e21006b9bc37275534d199a3768639c0cd531a233d81576dfcb2602",
+											"pin_self": "b913af1e763599b37d54e6e439dd4b435b61c9c1d9fee3628427099f05d4d3f0",
+											"pin_contract_name": "FungibleToken",
+											"pin_contract_address": "0xf233dcee88fe0abe",
+											"imports": [
+												{
+													"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+													"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+													"pin_contract_name": "ViewResolver",
+													"pin_contract_address": "0x1d7e57aa55817448",
+													"imports": []
+												},
+												{
+													"pin": "fdf38f744b1cccbff5682a29a51efe62d3a596c40784491629cd2a037eed2ba8",
+													"pin_self": "b230a59e4f9f68ce0c06977a1cb38e7f560a843054602143f81c533cebf72aa7",
+													"pin_contract_name": "Burner",
+													"pin_contract_address": "0xf233dcee88fe0abe",
+													"imports": []
+												}
+											]
+										},
+										{
+											"pin": "4ae712052ae85739e40233d4061edd3bcc545878e29948f942f609647fa32755",
+											"pin_self": "856ef3bb1b374cda7cfc0731f9976fa69fccdc41e15b8d94cbdb72bc09628272",
+											"pin_contract_name": "MetadataViews",
+											"pin_contract_address": "0x1d7e57aa55817448",
+											"imports": [
+												{
+													"pin": "fdf38f744b1cccbff5682a29a51efe62d3a596c40784491629cd2a037eed2ba8",
+													"pin_self": "b230a59e4f9f68ce0c06977a1cb38e7f560a843054602143f81c533cebf72aa7",
+													"pin_contract_name": "Burner",
+													"pin_contract_address": "0xf233dcee88fe0abe",
+													"imports": []
+												},
+												{
+													"pin": "ab297380ce176ffbd8976e7805ebf180dcd8a65933c5607680941d565ff2ecf1",
+													"pin_self": "e087a979d2220b9ff33a82751416bb9d2f9051a1aa2cc7383c00f37073c44006",
+													"pin_contract_name": "NonFungibleToken",
+													"pin_contract_address": "0x1d7e57aa55817448",
+													"imports": [
+														{
+															"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+															"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+															"pin_contract_name": "ViewResolver",
+															"pin_contract_address": "0x1d7e57aa55817448",
+															"imports": []
+														}
+													]
+												},
+												{
+													"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+													"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+													"pin_contract_name": "ViewResolver",
+													"pin_contract_address": "0x1d7e57aa55817448",
+													"imports": []
+												}
+											]
+										},
+										{
+											"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+											"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+											"pin_contract_name": "ViewResolver",
+											"pin_contract_address": "0x1d7e57aa55817448",
+											"imports": []
+										}
+									]
+								}
+							},
+							{
+								"network": "previewnet",
+								"address": "a0225e7000ac82a9",
+								"dependency_pin_block_height": 0,
+								"dependency_pin": {
+									"pin": "",
+									"pin_self": "",
+									"pin_contract_name": "",
+									"pin_contract_address": "",
+									"imports": null
+								}
+							},
+							{
+								"network": "testing",
+								"address": "0000000000000002",
+								"dependency_pin_block_height": 0,
+								"dependency_pin": {
+									"pin": "",
+									"pin_self": "",
+									"pin_contract_name": "",
+									"pin_contract_address": "",
+									"imports": null
+								}
+							},
+							{
+								"network": "testnet",
+								"address": "9a0766d93b6608b7",
+								"dependency_pin_block_height": 215465071,
+								"dependency_pin": {
+									"pin": "f61e76648a3069ebff506b6007d5c8185612ca29ccf6c639b97d2fcdddb5dff2",
+									"pin_self": "be600421a8b9799c427e7e69fcb5c94fba7f4f00277840f30c5cbb4b08f1f890",
+									"pin_contract_name": "FungibleTokenMetadataViews",
+									"pin_contract_address": "0x9a0766d93b6608b7",
+									"imports": [
+										{
+											"pin": "1dcfe88a8f608a664b492e23dfdfdcc0f8d13f5261c918801f196f111584a9ef",
+											"pin_self": "1e23db980500f7f0b3112dbec14ee03079525c3e490532981e333607a0d72648",
+											"pin_contract_name": "FungibleToken",
+											"pin_contract_address": "0x9a0766d93b6608b7",
+											"imports": [
+												{
+													"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+													"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+													"pin_contract_name": "ViewResolver",
+													"pin_contract_address": "0x631e88ae7f1d7c20",
+													"imports": []
+												},
+												{
+													"pin": "fdf38f744b1cccbff5682a29a51efe62d3a596c40784491629cd2a037eed2ba8",
+													"pin_self": "b230a59e4f9f68ce0c06977a1cb38e7f560a843054602143f81c533cebf72aa7",
+													"pin_contract_name": "Burner",
+													"pin_contract_address": "0x9a0766d93b6608b7",
+													"imports": []
+												}
+											]
+										},
+										{
+											"pin": "5c8c4a0fb2c0265d6be8be438d53f2f890302c0a60168b9ea92dc1cc8e1c1c69",
+											"pin_self": "60cb90ca0c0135f6f9ac74d87c4cb55350da74ed985f804b514754ffe1c04b48",
+											"pin_contract_name": "MetadataViews",
+											"pin_contract_address": "0x631e88ae7f1d7c20",
+											"imports": [
+												{
+													"pin": "fdf38f744b1cccbff5682a29a51efe62d3a596c40784491629cd2a037eed2ba8",
+													"pin_self": "b230a59e4f9f68ce0c06977a1cb38e7f560a843054602143f81c533cebf72aa7",
+													"pin_contract_name": "Burner",
+													"pin_contract_address": "0x9a0766d93b6608b7",
+													"imports": []
+												},
+												{
+													"pin": "b12511cf8bc6237d06580340c0118c624dc4f4f0faee8d073417c9b1e09ae65f",
+													"pin_self": "8396ebca01cd8d9ada9cd04f8a50dd85c2725fbb893d5a6a35ac9598237b725f",
+													"pin_contract_name": "NonFungibleToken",
+													"pin_contract_address": "0x631e88ae7f1d7c20",
+													"imports": [
+														{
+															"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+															"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+															"pin_contract_name": "ViewResolver",
+															"pin_contract_address": "0x631e88ae7f1d7c20",
+															"imports": []
+														}
+													]
+												},
+												{
+													"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+													"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+													"pin_contract_name": "ViewResolver",
+													"pin_contract_address": "0x631e88ae7f1d7c20",
+													"imports": []
+												}
+											]
+										},
+										{
+											"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+											"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+											"pin_contract_name": "ViewResolver",
+											"pin_contract_address": "0x631e88ae7f1d7c20",
+											"imports": []
+										}
+									]
+								}
+							}
+						]
+					}
+				]
+			}
+		],
+		"messages": [
+			{
+				"key": "title",
+				"i18n": [
+					{
+						"tag": "en-US",
+						"translation": "Get All Vault Info From Storage"
+					}
+				]
+			}
+		]
+	}
+}

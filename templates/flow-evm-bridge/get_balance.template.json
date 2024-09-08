@@ -1,0 +1,167 @@
+{
+	"f_type": "InteractionTemplate",
+	"f_version": "1.1.0",
+	"id": "3b0ffb3ffa4ea6638a9dc3657038ad71574e954878529799c806ac2379fb8894",
+	"data": {
+		"type": "script",
+		"interface": "",
+		"cadence": {
+			"body": "import \"FungibleToken\"\n\n/// Returns the balance of the stored Vault at the given address if exists, otherwise nil\n///\n/// @param address: The address of the account that owns the vault\n/// @param vaultPathIdentifier: The identifier of the vault's storage path\n///\n/// @returns The balance of the stored Vault at the given address\n///\naccess(all) fun main(address: Address, vaultPathIdentifier: String): UFix64? {\n    let path = StoragePath(identifier: vaultPathIdentifier) ?? panic(\"Malformed StoragePath identifier\")\n    return getAuthAccount\u003cauth(BorrowValue) \u0026Account\u003e(address).storage.borrow\u003c\u0026{FungibleToken.Vault}\u003e(\n            from: path\n        )?.balance ?? nil\n}\n",
+			"network_pins": [
+				{
+					"network": "testnet",
+					"pin_self": "fcf397e1c40a7f04c1bf00b87ab78402cc1cbe42d4457f5c280650f4182d3966"
+				},
+				{
+					"network": "emulator",
+					"pin_self": "c80f7dcfbc1239a98ac246fa8385f7a9337bf4d0ab6addf716a7abf865bcc348"
+				},
+				{
+					"network": "mainnet",
+					"pin_self": "f6fdbc34a0d51ce2526716ad016c74ae2d3cfae0a620cbce273d98e6a7df4017"
+				}
+			]
+		},
+		"parameters": [
+			{
+				"label": "address",
+				"index": 0,
+				"type": "Address",
+				"messages": []
+			},
+			{
+				"label": "vaultPathIdentifier",
+				"index": 1,
+				"type": "String",
+				"messages": []
+			}
+		],
+		"dependencies": [
+			{
+				"contracts": [
+					{
+						"contract": "FungibleToken",
+						"networks": [
+							{
+								"network": "mainnet",
+								"address": "0xf233dcee88fe0abe",
+								"dependency_pin_block_height": 86397179,
+								"dependency_pin": {
+									"pin": "2ebe6fb33e21006b9bc37275534d199a3768639c0cd531a233d81576dfcb2602",
+									"pin_self": "b913af1e763599b37d54e6e439dd4b435b61c9c1d9fee3628427099f05d4d3f0",
+									"pin_contract_name": "FungibleToken",
+									"pin_contract_address": "0xf233dcee88fe0abe",
+									"imports": [
+										{
+											"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+											"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+											"pin_contract_name": "ViewResolver",
+											"pin_contract_address": "0x1d7e57aa55817448",
+											"imports": []
+										},
+										{
+											"pin": "fdf38f744b1cccbff5682a29a51efe62d3a596c40784491629cd2a037eed2ba8",
+											"pin_self": "b230a59e4f9f68ce0c06977a1cb38e7f560a843054602143f81c533cebf72aa7",
+											"pin_contract_name": "Burner",
+											"pin_contract_address": "0xf233dcee88fe0abe",
+											"imports": []
+										}
+									]
+								}
+							},
+							{
+								"network": "testnet",
+								"address": "0x9a0766d93b6608b7",
+								"dependency_pin_block_height": 215465079,
+								"dependency_pin": {
+									"pin": "1dcfe88a8f608a664b492e23dfdfdcc0f8d13f5261c918801f196f111584a9ef",
+									"pin_self": "1e23db980500f7f0b3112dbec14ee03079525c3e490532981e333607a0d72648",
+									"pin_contract_name": "FungibleToken",
+									"pin_contract_address": "0x9a0766d93b6608b7",
+									"imports": [
+										{
+											"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+											"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+											"pin_contract_name": "ViewResolver",
+											"pin_contract_address": "0x631e88ae7f1d7c20",
+											"imports": []
+										},
+										{
+											"pin": "fdf38f744b1cccbff5682a29a51efe62d3a596c40784491629cd2a037eed2ba8",
+											"pin_self": "b230a59e4f9f68ce0c06977a1cb38e7f560a843054602143f81c533cebf72aa7",
+											"pin_contract_name": "Burner",
+											"pin_contract_address": "0x9a0766d93b6608b7",
+											"imports": []
+										}
+									]
+								}
+							},
+							{
+								"network": "emulator",
+								"address": "0xee82856bf20e2aa6",
+								"dependency_pin_block_height": 0,
+								"dependency_pin": {
+									"pin": "e9e7b397cf525d4d4dbdd91c7c2ac6c3cb2575ec8ee6459a06aa3429254d2eb2",
+									"pin_self": "d23879b5abd0070ddfec85fdde50398c6617d2f5b35a2eeb1f873c6f0658204f",
+									"pin_contract_name": "FungibleToken",
+									"pin_contract_address": "0xee82856bf20e2aa6",
+									"imports": [
+										{
+											"pin": "79e92db336f6cc98eb75c2153a706ec75491d64bf097439fb157d49edd5e5c2d",
+											"pin_self": "de0788963b97da19cdb0f1d94211375522eac039013324b876290a95ff3c7c56",
+											"pin_contract_name": "ViewResolver",
+											"pin_contract_address": "0xf8d6e0586b0a20c7",
+											"imports": []
+										},
+										{
+											"pin": "fdf38f744b1cccbff5682a29a51efe62d3a596c40784491629cd2a037eed2ba8",
+											"pin_self": "b230a59e4f9f68ce0c06977a1cb38e7f560a843054602143f81c533cebf72aa7",
+											"pin_contract_name": "Burner",
+											"pin_contract_address": "0xf8d6e0586b0a20c7",
+											"imports": []
+										}
+									]
+								}
+							},
+							{
+								"network": "previewnet",
+								"address": "a0225e7000ac82a9",
+								"dependency_pin_block_height": 0,
+								"dependency_pin": {
+									"pin": "",
+									"pin_self": "",
+									"pin_contract_name": "",
+									"pin_contract_address": "",
+									"imports": null
+								}
+							},
+							{
+								"network": "testing",
+								"address": "0000000000000002",
+								"dependency_pin_block_height": 0,
+								"dependency_pin": {
+									"pin": "",
+									"pin_self": "",
+									"pin_contract_name": "",
+									"pin_contract_address": "",
+									"imports": null
+								}
+							}
+						]
+					}
+				]
+			}
+		],
+		"messages": [
+			{
+				"key": "title",
+				"i18n": [
+					{
+						"tag": "en-US",
+						"translation": "Get Balance"
+					}
+				]
+			}
+		]
+	}
+}
