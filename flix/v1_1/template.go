@@ -1,12 +1,12 @@
 package v1_1
 
 import (
-	"bytes"
 	"crypto/sha256"
 	"encoding/json"
 	"fmt"
 	"github.com/onflow/cadence/runtime/parser"
 	"github.com/turbolent/prettier"
+	"regexp"
 	"strings"
 )
 
@@ -41,8 +41,8 @@ type dependencies struct {
 }
 
 type contractDependency struct {
-	Contracts string            `json:"contract"`
-	Networks  []contractNetwork `json:"networks"`
+	Contract string            `json:"contract"`
+	Networks []contractNetwork `json:"networks"`
 }
 
 type contractNetwork struct {
@@ -91,30 +91,69 @@ func NewFromJson(rawJson []byte) (*Template, error) {
 	return &parsed, nil
 }
 
-func (t *Template) CadenceAstHash() ([]byte, error) {
-	astHash, err := cadenceAstHash([]byte(t.Data.Cadence.Body))
+// CadenceAstHashes returns all Cadence AST hashes that map to the semantically equivalent source code
+func (l *Template) CadenceAstHashes() ([][]byte, error) {
+	supportedNetworkNames := []string{
+		"emulator",
+		"testnet",
+		"mainnet",
+	}
+	var astHashes [][]byte
+
+	// Also include plan source code, without patched imports
+	astHash, err := cadenceAstHash([]byte(l.Data.Cadence.Body))
 	if err != nil {
 		return nil, err
 	}
-	return astHash, nil
-}
+	astHashes = append(astHashes, astHash)
 
-func (t *Template) MatchesSource(source []byte) (bool, error) {
-	astHash1, err := cadenceAstHash(source)
-	if err != nil {
-		return false, err
+	for _, networkName := range supportedNetworkNames {
+		sourceCode := l.sourceCodeForNetwork(networkName)
+		if sourceCode == "" {
+			// Network not supported for this template
+			continue
+		}
+
+		astHash, err := cadenceAstHash([]byte(sourceCode))
+		if err != nil {
+			return nil, err
+		}
+		astHashes = append(astHashes, astHash)
 	}
 
-	astHash2, err := t.CadenceAstHash()
-	if err != nil {
-		return false, err
-	}
-
-	return bytes.Equal(astHash1, astHash2), nil
+	return astHashes, nil
 }
 
-func (t *Template) GetMessage(key, tag string) string {
-	for _, msg := range t.Data.Messages {
+// sourceCodeForNetwork returns source code for a specific network name.
+// Returns an empty string if no source code can be produced for a given network.
+func (l *Template) sourceCodeForNetwork(networkName string) string {
+	sourceCode := l.Data.Cadence.Body
+
+	for _, deps := range l.Data.Dependencies {
+		for _, dep := range deps.Contracts {
+			var network *contractNetwork
+			for _, net := range dep.Networks {
+				if net.Network == networkName {
+					network = &net
+				}
+			}
+
+			if network == nil {
+				// Can't build source code for this network
+				return ""
+			}
+
+			importPattern := regexp.MustCompile(fmt.Sprintf(`import +"%s"`, dep.Contract))
+			replacementImport := fmt.Sprintf("import %s from %s", dep.Contract, prefixedAddress(network.Address))
+			sourceCode = string(importPattern.ReplaceAll([]byte(sourceCode), []byte(replacementImport)))
+		}
+	}
+
+	return sourceCode
+}
+
+func (l *Template) GetMessage(key, tag string) string {
+	for _, msg := range l.Data.Messages {
 		if msg.Key == key {
 			for _, msgI18n := range msg.I18n {
 				if msgI18n.Tag == tag {
@@ -126,8 +165,8 @@ func (t *Template) GetMessage(key, tag string) string {
 	return ""
 }
 
-func (t *Template) SetMessage(key, tag, translation string) {
-	for _, msg := range t.Data.Messages {
+func (l *Template) SetMessage(key, tag, translation string) {
+	for _, msg := range l.Data.Messages {
 		if msg.Key == key {
 			for _, msgI18n := range msg.I18n {
 				if msgI18n.Tag == tag {
@@ -138,7 +177,7 @@ func (t *Template) SetMessage(key, tag, translation string) {
 		}
 	}
 
-	t.Data.Messages = append(t.Data.Messages, message{
+	l.Data.Messages = append(l.Data.Messages, message{
 		Key: key,
 		I18n: []i18n{
 			{
@@ -147,6 +186,14 @@ func (t *Template) SetMessage(key, tag, translation string) {
 			},
 		},
 	})
+}
+
+func prefixedAddress(address string) string {
+	if strings.HasPrefix(address, "0x") {
+		return address
+	} else {
+		return "0x" + address
+	}
 }
 
 func cadenceAstHash(source []byte) ([]byte, error) {

@@ -7,14 +7,20 @@ import (
 )
 
 type TemplateIndexer struct {
-	store []*Template
+	// lookupByAstHash stores a lookup from Cadence AST hash to template
+	// Note: this map is not garbage collectible.
+	// If we ever need to free memory for unused templates,
+	//we'd have to use a different approach.
+	lookupByAstHash map[string]*Template
+	// templates stores all available (deduplicated) templates
+	templates []*Template
 }
 
 const templatesDirPath = "./templates/"
 
 func NewIndexer() *TemplateIndexer {
 	return &TemplateIndexer{
-		store: make([]*Template, 0),
+		lookupByAstHash: make(map[string]*Template),
 	}
 }
 
@@ -55,23 +61,37 @@ func (i *TemplateIndexer) SeedFromFs() error {
 				return err
 			}
 
-			i.add(template)
+			err = i.add(template)
+			if err != nil {
+				return err
+			}
 		}
 	}
 
 	return nil
 }
 
-func (i *TemplateIndexer) add(template *Template) {
-	i.store = append(i.store, template)
+func (i *TemplateIndexer) add(template *Template) error {
+	astHashes, err := template.CadenceAstHashes()
+	if err != nil {
+		return err
+	}
+
+	for _, astHash := range astHashes {
+		i.lookupByAstHash[string(astHash)] = template
+	}
+
+	i.templates = append(i.templates, template)
+
+	return nil
 }
 
 func (i *TemplateIndexer) List() []*Template {
-	return i.store
+	return i.templates
 }
 
 func (i *TemplateIndexer) GetByID(id string) *Template {
-	for _, template := range i.store {
+	for _, template := range i.lookupByAstHash {
 		if template.Id == id {
 			return template
 		}
@@ -80,14 +100,9 @@ func (i *TemplateIndexer) GetByID(id string) *Template {
 }
 
 func (i *TemplateIndexer) GetBySource(cadenceSource []byte) (*Template, error) {
-	for _, template := range i.store {
-		isMatch, err := template.MatchesSource(cadenceSource)
-		if err != nil {
-			return nil, err
-		}
-		if isMatch {
-			return template, nil
-		}
+	astHash, err := cadenceAstHash(cadenceSource)
+	if err != nil {
+		return nil, err
 	}
-	return nil, nil
+	return i.lookupByAstHash[string(astHash)], nil
 }
